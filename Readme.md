@@ -1,7 +1,7 @@
 # Проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Лысенко Ирина](https://up.htmlacademy.ru/ecmascript/13/user/1493941).
-* Наставник: `Неизвестно`.
+* Наставник: [Раиль Сахавиев](https://htmlacademy.ru/profile/id1331891).
 
 ---
 
