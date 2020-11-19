@@ -22,6 +22,9 @@ import {
 import {
   createNewPointElement
 } from "./view/new-form.js";
+import {
+  createEditPointElement
+} from "./view/edit-form.js";
 
 const TASK_COUNT = 3;
 const render = (container, layout, place) => {
@@ -43,7 +46,8 @@ render(tripEvents, createSorterFormElement(), `beforeend`);
 render(tripEvents, createTripListElement(), `beforeend`);
 
 const tripEventsList = document.querySelector(`.trip-events__list`);
-render(tripEventsList, createNewPointElement(), `beforebegin`);
+render(tripEventsList, createNewPointElement(), `afterbegin`);
 for (let i = 0; i < TASK_COUNT; i++) {
-  render(tripEventsList, createTripPointElement(), `beforebegin`);
+  render(tripEventsList, createTripPointElement(), `beforeend`);
 }
+render(tripEventsList, createEditPointElement(), `beforeend`);
