@@ -125,7 +125,7 @@ const generateOfferOptions = (type) => {
 
 const generateDescription = () => {
 
-  return pointDescription.slice(getRandomInteger(1, pointDescription.length - 1)).toString();
+  return pointDescription.slice(getRandomInteger(1, pointDescription.length - 1)).join(``);
 };
 
 const generatePhotos = () => {

@@ -11,11 +11,11 @@ import {createTripPointElement} from "./view/trip-point.js";
 /* import {
   createNewPointElement
 } from "./view/new-form.js";*/
-import {generateEvent} from "./mocks/event.js";
+import {generateEvent, offerOptions} from "./mocks/event.js";
 import {createEditPointElement} from "./view/edit-form.js";
 import {getDateFormat} from "./util";
 
-const EVENT_COUNT = 20;
+const EVENT_COUNT = 5;
 const render = (container, layout, place) => {
   container.insertAdjacentHTML(place, layout);
 };
@@ -34,9 +34,9 @@ const getTripCost = (array) => {
   let cost = 0;
   for (const item of array) {
     let offerPrice = 0;
-    for (const offer of item.offers) {
-      if (offer.isChecked) {
-        offerPrice = offerPrice + offer.price;
+    if (item.type in offerOptions) {
+      for (const offer of item.offers) {
+        offerPrice = offerPrice + offerOptions[item.type][offer].price;
       }
     }
     cost = cost + item.price + offerPrice;
@@ -49,7 +49,7 @@ const getTripInfo = (array) => {
   const tripDestination = `${array[0].destination} &mdash; ... &mdash; ${array[array.length - 1].destination}`;
   return {
     tripDuration,
-    tripDestination
+    tripDestination,
   };
 };
 
