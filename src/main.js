@@ -29,6 +29,7 @@ const eventsPoints = new Array(EVENT_COUNT).fill().map(generateEvent);
 const events = eventsPoints.slice().sort((a, b) => {
   return +a.dateTime.start - b.dateTime.start;
 });
+
 const getTripCost = (array) => {
   let cost = 0;
   for (const item of array) {

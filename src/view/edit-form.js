@@ -1,4 +1,5 @@
 import {getDateFormat} from "../util.js";
+import {offerOptions} from "../mocks/event.js";
 
 export const createEditPointElement = (event) => {
 
@@ -6,14 +7,15 @@ export const createEditPointElement = (event) => {
   let destinationString = ``;
   let photoString = ``;
 
-  if (event.offers.length) {
-    for (const offer of event.offers) {
+  if (event.type in offerOptions) {
+    const options = Object.entries(offerOptions[event.type]);
+    for (const [key, value] of options) {
       offersList = offersList + `<div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}-1" type="checkbox" name="event-offer-${offer.id}" ${offer.isChecked ? `checked` : ``}>
-                        <label class="event__offer-label" for="event-offer-${offer.id}-1">
-                          <span class="event__offer-title">${offer.name}</span>
+                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${key}-1" type="checkbox" name="event-offer-${key}" ${ event.offers.includes(key) ? `checked` : ``}>
+                        <label class="event__offer-label" for="event-offer-${key}-1">
+                          <span class="event__offer-title">${value.name}</span>
                           &plus;&euro;&nbsp;
-                          <span class="event__offer-price">${offer.price}</span>
+                          <span class="event__offer-price">${value.price}</span>
                         </label>
                       </div>`;
     }
@@ -21,8 +23,8 @@ export const createEditPointElement = (event) => {
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                       <div class="event__available-offers">${offersList}</div>
                   </section>`;
-  }
 
+  }
   if (event.destination.length) {
     destinationString = `<section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>

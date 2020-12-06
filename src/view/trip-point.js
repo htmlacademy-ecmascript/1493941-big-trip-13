@@ -1,17 +1,19 @@
 import {getDateFormat, getDatesDuration} from "../util.js";
+import {offerOptions} from "../mocks/event.js";
 
 export const createTripPointElement = (event) => {
 
   let offersList = ``;
   if (event.offers.length) {
-    const checkedOffers = event.offers.slice().filter((offer) => offer.isChecked);
-
-    for (const offer of checkedOffers) {
-      offersList = offersList + `<li class="event__offer">
-        <span class="event__offer-title">${offer.name}</span>
+    const options = Object.entries(offerOptions[event.type]);
+    for (const [key, value] of options) {
+      if (event.offers.includes(key)) {
+        offersList = offersList + `<li class="event__offer">
+        <span class="event__offer-title">${value.name}</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
+        <span class="event__offer-price">${value.price}</span>
       </li>`;
+      }
     }
     offersList = `<h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">${offersList}</ul>`;
