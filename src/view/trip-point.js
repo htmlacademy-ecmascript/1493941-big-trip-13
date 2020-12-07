@@ -2,7 +2,6 @@ import {getDateFormat, getDatesDuration} from "../util.js";
 import {offerOptions} from "../mocks/event.js";
 
 export const createTripPointElement = (event) => {
-
   let offersList = ``;
   if (event.offers.length) {
     const options = Object.entries(offerOptions[event.type]);
@@ -18,6 +17,7 @@ export const createTripPointElement = (event) => {
     offersList = `<h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">${offersList}</ul>`;
   }
+
   return `
 <li class="trip-events__item">
   <div class="event">

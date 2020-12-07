@@ -145,6 +145,7 @@ const generateEvent = () => {
       end: generateDate().endDate,
     },
     price: getRandomInteger(0, 200),
+    isFavorite: Boolean(getRandomInteger(0, 1))
   };
 };
 
