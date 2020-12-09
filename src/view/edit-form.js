@@ -1,7 +1,7 @@
-import {getDateFormat} from "../util.js";
 import {offerOptions} from "../mocks/event.js";
+import {getDateFormat, createElement} from "../util.js";
 
-export const createEditPointElement = (event) => {
+const createEditPointElement = (event) => {
 
   let offersList = ``;
   let destinationString = ``;
@@ -152,3 +152,26 @@ export const createEditPointElement = (event) => {
               </form>
             </li>`;
 };
+
+export default class PointEditForm {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditPointElement(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
