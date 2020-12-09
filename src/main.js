@@ -46,6 +46,9 @@ const renderTripPoint = (tripListElement, tripPoint) => {
     replaceTripPointToEditForm();
     document.addEventListener(`keydown`, onEscKeyDown);
   });
+  tripPointEditComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceEditFormToTripPoint();
+  });
   tripPointEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
     evt.preventDefault();
     replaceEditFormToTripPoint();
