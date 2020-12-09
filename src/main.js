@@ -8,7 +8,7 @@ import TripPointView from "./view/trip-point.js";
 import {generateEvent} from "./mocks/event.js";
 import PointEditFormView from "./view/edit-form.js";
 import {render, RenderPosition} from "./util.js";
-const EVENT_COUNT = 0;
+const EVENT_COUNT = 20;
 const tripMain = document.querySelector(`.trip-main`);
 const tripControlsTitle = document.querySelector(`.trip-controls :last-child`);
 const tripPointsContainer = document.querySelector(`.trip-events`);
