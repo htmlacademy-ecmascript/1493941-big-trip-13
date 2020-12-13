@@ -1,4 +1,5 @@
-import {createElement, getDateFormat} from "../util.js";
+import {createElement} from "../util.js";
+import dayjs from "dayjs";
 
 const createTripInfoElement = (tripDestination, tripDuration) => {
   return `<section class="trip-main__trip-info  trip-info">
@@ -12,13 +13,13 @@ const createTripInfoElement = (tripDestination, tripDuration) => {
 
 export default class TripInfo {
   constructor(array) {
-    this.tripDestination = `${getDateFormat(array[0].dateTime.start).day}&nbsp;—&nbsp;${getDateFormat(array[array.length - 1].dateTime.end).dayOfMonth}`;
-    this.tripDuration = `${array[0].destination} &mdash; ... &mdash; ${array[array.length - 1].destination}`;
+    this._tripDestination = `${dayjs(array[0].dateTime.start).format(`MMM DD`)}&nbsp;—&nbsp;${dayjs(array[array.length - 1].dateTime.end).format(`DD`)}`;
+    this._tripDuration = `${array[0].destination} &mdash; ... &mdash; ${array[array.length - 1].destination}`;
     this._element = null;
   }
 
   getTemplate() {
-    return createTripInfoElement(this.tripDestination, this.tripDuration);
+    return createTripInfoElement(this._tripDestination, this._tripDuration);
   }
 
   getElement() {

@@ -13,10 +13,10 @@ const getTripCost = (array) => {
     let offerPrice = 0;
     if (item.type in offerOptions) {
       for (const offer of item.offers) {
-        offerPrice = offerPrice + offerOptions[item.type][offer].price;
+        offerPrice += offerOptions[item.type][offer].price;
       }
     }
-    cost = cost + item.price + offerPrice;
+    cost += item.price + offerPrice;
   }
 
   return cost;
@@ -24,12 +24,12 @@ const getTripCost = (array) => {
 
 export default class CostInfo {
   constructor(array) {
-    this.cost = getTripCost(array);
+    this._cost = getTripCost(array);
     this._element = null;
   }
 
   getTemplate() {
-    return createCostInfoElement(this.cost);
+    return createCostInfoElement(this._cost);
   }
 
   getElement() {

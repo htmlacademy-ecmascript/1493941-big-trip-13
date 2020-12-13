@@ -1,38 +1,36 @@
-import {getDateFormat, getDatesDuration, createElement} from "../util.js";
+import {getDatesDuration, createElement} from "../util.js";
 import {offerOptions} from "../mocks/event.js";
+import dayjs from "dayjs";
 
 const createTripPointElement = (event) => {
   const {type, destination, offers, dateTime, price, isFavorite} = event;
-  let offersList = ``;
-  if (offers.length) {
-    const options = Object.entries(offerOptions[type]);
-    for (const [key, value] of options) {
-      if (offers.includes(key)) {
-        offersList = offersList + `<li class="event__offer"><span class="event__offer-title">${value.name}</span>&plus;&euro;&nbsp;<span class="event__offer-price">${value.price}</span></li>`;
-      }
-    }
-    offersList = `<h4 class="visually-hidden">Offers:</h4><ul class="event__selected-offers">${offersList}</ul>`;
-  }
+  const eventOptions = offerOptions[type];
 
   return `<li class="trip-events__item">
   <div class="event">
-    <time class="event__date" datetime="${getDateFormat(dateTime.start).formatDate}">${getDateFormat(dateTime.start).day}</time>
+    <time class="event__date" datetime="${dayjs(dateTime.start).format(`DD/MM/YY HH:mm`)}">${dayjs(dateTime.start).format(`MMM DD`)}</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
     </div>
     <h3 class="event__title">${type} ${destination}</h3>
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="${getDateFormat(dateTime.start).formatDate}">${getDateFormat(dateTime.start).time}</time>
+        <time class="event__start-time" datetime="${dayjs(dateTime.start).format(`DD/MM/YY HH:mm`)}">${dayjs(dateTime.start).format(`HH:mm`)}</time>
         &mdash;
-        <time class="event__end-time" datetime="${getDateFormat(dateTime.end).formatDate}">${getDateFormat(dateTime.end).time}</time>
+        <time class="event__end-time" datetime="${dayjs(dateTime.end).format(`DD/MM/YY HH:mm`)}">${dayjs(dateTime.end).format(`HH:mm`)}</time>
       </p>
       <p class="event__duration">${getDatesDuration(dateTime.start, dateTime.end)}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${price}</span>
     </p>
-    ${offersList}
+    ${offers.length > 0 ? `<h4 class="visually-hidden">Offers:</h4>
+    <ul class="event__selected-offers">` : ``}
+    ${offers.map((key) => `
+    <li class="event__offer"><span class="event__offer-title">${eventOptions[key].name}
+    </span>&plus;&euro;&nbsp;<span class="event__offer-price">${eventOptions[key].price}
+    </span></li>`).join(``)}
+    ${offers.length > 0 ? `</ul>` : ``}
     <button class="event__favorite-btn ${isFavorite ? `event__favorite-btn--active` : ``}" type="button">
       <span class="visually-hidden">Add to favorite</span>
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
