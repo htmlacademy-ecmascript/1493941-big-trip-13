@@ -1,6 +1,6 @@
 import {offerOptions} from "../mocks/event.js";
-import {createElement} from "../util.js";
 import dayjs from "dayjs";
+import AbstractView from "./abstract.js";
 
 const createEditPointElement = (event) => {
   const {type, destination, offers, dateTime, price, photo, description} = event;
@@ -152,25 +152,36 @@ const createEditPointElement = (event) => {
             </li>`;
 };
 
-export default class PointEditForm {
+export default class PointEditForm extends AbstractView {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+
+    this._closeClickHandler = this._closeClickHandler.bind(this);
+    this._submitHandler = this._submitHandler.bind(this);
   }
 
   getTemplate() {
     return createEditPointElement(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _closeClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setCloseClickHandler(callback) {
+    this._callback.closeClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._closeClickHandler);
+  }
+
+  _submitHandler(evt) {
+    evt.preventDefault();
+    this._callback.submitClick();
+  }
+
+  setSubmitHandler(callback) {
+    this._callback.submitClick = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._submitHandler);
   }
 }
