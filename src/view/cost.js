@@ -1,5 +1,5 @@
-import {createElement} from "../util.js";
 import {offerOptions} from "../mocks/event";
+import AbstractView from "./abstract.js";
 
 const createCostInfoElement = (cost) => {
   return `<p class="trip-info__cost">
@@ -22,25 +22,13 @@ const getTripCost = (array) => {
   return cost;
 };
 
-export default class CostInfo {
+export default class CostInfo extends AbstractView {
   constructor(array) {
+    super();
     this._cost = getTripCost(array);
-    this._element = null;
   }
 
   getTemplate() {
     return createCostInfoElement(this._cost);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

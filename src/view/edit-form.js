@@ -1,25 +1,22 @@
 import {offerOptions} from "../mocks/event.js";
-import {createElement} from "../util.js";
 import dayjs from "dayjs";
+import AbstractView from "./abstract.js";
 
 const createEditPointElement = (event) => {
   const {type, destination, offers, dateTime, price, photo, description} = event;
-  let offersList = ``;
   let destinationString = ``;
   let photoString = ``;
-  if (type in offerOptions) {
-    const options = Object.entries(offerOptions[type]);
-    for (const [key, value] of options) {
-      offersList += `<div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${key}-1" type="checkbox" name="event-offer-${key}" ${offers.includes(key) ? `checked` : ``}>
-                        <label class="event__offer-label" for="event-offer-${key}-1">
-                          <span class="event__offer-title">${value.name}</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">${value.price}</span>
-                        </label>
-                      </div>`;
-    }
-  }
+  const creatOffersListElement = (options) => {
+    return Object.entries(options).map((value) => `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${value[0]}-1" type="checkbox" name="event-offer-${value[0]}" ${offers.includes(value[0]) ? `checked` : ``}>
+            <label class="event__offer-label" for="event-offer-${value[0]}-1">
+                <span class="event__offer-title">${value[1].name}</span>
+                   &plus;&euro;&nbsp;
+                <span class="event__offer-price">${value[1].price}</span>
+            </label>
+    </div>`).join(``);
+  };
+
   if (destination.length) {
     destinationString = `<section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -143,7 +140,7 @@ const createEditPointElement = (event) => {
                 ${offerOptions[type] ? `<section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                       <div class="event__available-offers">` : ``}
-                ${offerOptions[type] ? offersList : ``}
+                ${offerOptions[type] ? creatOffersListElement(offerOptions[type]) : ``}
                 ${offerOptions[type] ? `</div></section>` : `` }
                 ${destinationString}
                 ${photoString}
@@ -152,25 +149,36 @@ const createEditPointElement = (event) => {
             </li>`;
 };
 
-export default class PointEditForm {
+export default class PointEditForm extends AbstractView {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+
+    this._closeClickHandler = this._closeClickHandler.bind(this);
+    this._submitHandler = this._submitHandler.bind(this);
   }
 
   getTemplate() {
     return createEditPointElement(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _closeClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setCloseClickHandler(callback) {
+    this._callback.closeClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._closeClickHandler);
+  }
+
+  _submitHandler(evt) {
+    evt.preventDefault();
+    this._callback.submitClick();
+  }
+
+  setSubmitHandler(callback) {
+    this._callback.submitClick = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._submitHandler);
   }
 }
