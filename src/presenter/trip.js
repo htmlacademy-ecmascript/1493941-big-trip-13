@@ -8,6 +8,8 @@ import SorterView from "../view/sorter";
 import NoPointsView from "../view/no-points";
 import PointPresenter from "./point.js";
 import {updateItem} from "../utils/common.js";
+import {sortByTime, sortByPrice} from "../utils/util.js";
+import {SortType} from "../const.js";
 
 export default class Trip {
   constructor(tripInfoContainer, tripMenuContainer, tripPointsContainer) {
@@ -15,6 +17,7 @@ export default class Trip {
     this._tripMenuContainer = tripMenuContainer;
     this._tripPointsContainer = tripPointsContainer;
     this._tripPointPresenter = {};
+    this._currentSortType = SortType.DAY;
 
     this._tripListComponent = null;
     this._sortComponent = null;
@@ -26,11 +29,12 @@ export default class Trip {
 
     this._handleTripPointChange = this._handleTripPointChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(tripPoints) {
     this._tripPoints = tripPoints.slice();
-
+    this._sourcedtripPoints = tripPoints.slice();
 
     this._tripInfoComponent = new TripInfoView(this._tripPoints);
     this._costInfoComponent = new CostInfoView(this._tripPoints);
@@ -45,6 +49,30 @@ export default class Trip {
     this._renderSort(this._tripPoints);
   }
 
+  _sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.TIME:
+        this._tripPoints.sort(sortByTime);
+        break;
+      case SortType.PRICE:
+        this._tripPoints.sort(sortByPrice);
+        break;
+      default:
+        this._tripPoints = this._sourcedtripPoints.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortPoints(sortType);
+    this._clearTripPointList();
+    this._renderTripPoints();
+  }
 
   _handleModeChange() {
     Object
@@ -55,6 +83,7 @@ export default class Trip {
   _renderSort(tripPoints) {
     if (tripPoints.length) {
       render(this._tripPointsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+      this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
     }
   }
 
