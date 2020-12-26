@@ -1,7 +1,7 @@
 import TripPresenter from "./presenter/trip.js";
 import {generateEvent} from "./mocks/event.js";
 
-const EVENT_COUNT = 20;
+const EVENT_COUNT = 6;
 
 const tripMain = document.querySelector(`.trip-main`);
 const tripControlsTitle = document.querySelector(`.trip-controls :last-child`);

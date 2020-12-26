@@ -1,6 +1,6 @@
-import TripPointView from "../view/trip-point";
-import PointEditFormView from "../view/edit-form";
-import {render, RenderPosition, replace, remove} from "../utils/render";
+import TripPointView from "../view/trip-point.js";
+import PointEditFormView from "../view/edit-form.js";
+import {render, RenderPosition, replace, remove} from "../utils/render.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -17,9 +17,9 @@ export default class Point {
     this._tripPointEditComponent = null;
     this._mode = Mode.DEFAULT;
 
-    this._setEditClickHandler = this._setEditClickHandler.bind(this);
-    this._setCloseClickHandler = this._setCloseClickHandler.bind(this);
-    this._setSubmitHandler = this._setSubmitHandler.bind(this);
+    this._handleEditClick = this._handleEditClick.bind(this);
+    this._handleCloseClick = this._handleCloseClick.bind(this);
+    this._handleSubmit = this._handleSubmit.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
@@ -33,9 +33,9 @@ export default class Point {
     this._tripPointComponent = new TripPointView(this._tripPoint);
     this._tripPointEditComponent = new PointEditFormView(this._tripPoint);
 
-    this._tripPointComponent.setEditClickHandler(this._setEditClickHandler);
-    this._tripPointEditComponent.setSubmitHandler(this._setSubmitHandler);
-    this._tripPointEditComponent.setCloseClickHandler(this._setCloseClickHandler);
+    this._tripPointComponent.setEditClickHandler(this._handleEditClick);
+    this._tripPointEditComponent.setSubmitHandler(this._handleSubmit);
+    this._tripPointEditComponent.setCloseClickHandler(this._handleCloseClick);
     this._tripPointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     if (prevTripPointComponent === null || prevTripPointEditComponent === null) {
@@ -60,18 +60,18 @@ export default class Point {
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
-      this._replaceEditFormToTripPoint();
+      this._setDefaultMode();
     }
   }
 
-  _replaceTripPointToEditForm() {
+  _setEditMode() {
     replace(this._tripPointEditComponent, this._tripPointComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
   }
 
-  _replaceEditFormToTripPoint() {
+  _setDefaultMode() {
     replace(this._tripPointComponent, this._tripPointEditComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
@@ -84,20 +84,20 @@ export default class Point {
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      this._replaceEditFormToTripPoint();
+      this._setDefaultMode();
     }
   }
 
-  _setEditClickHandler() {
-    this._replaceTripPointToEditForm();
+  _handleEditClick() {
+    this._setEditMode();
   }
 
-  _setCloseClickHandler() {
-    this._replaceEditFormToTripPoint();
+  _handleCloseClick() {
+    this._setDefaultMode();
   }
 
-  _setSubmitHandler(tripPoint) {
+  _handleSubmit(tripPoint) {
     this._changeData(tripPoint);
-    this._replaceEditFormToTripPoint();
+    this._setDefaultMode();
   }
 }
