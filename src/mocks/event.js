@@ -1,5 +1,7 @@
-import {getRandomInteger} from "../util.js";
+import {getRandomInteger} from "../utils/common.js";
 import dayjs from "dayjs";
+
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const PHOTO_PATH = `http://picsum.photos/248/152?r=`;
 const pointTypeEnum = {
@@ -135,6 +137,7 @@ const generatePhotos = () => {
 const generateEvent = () => {
   const type = pointTypes[getRandomInteger(0, pointTypes.length - 1)];
   return {
+    id: generateId(),
     type,
     destination: pointDestinations [getRandomInteger(0, pointDestinations.length - 1)],
     offers: generateOfferOptions(type),

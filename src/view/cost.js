@@ -1,4 +1,4 @@
-import {offerOptions} from "../mocks/event";
+import {offerOptions} from "../mocks/event.js";
 import AbstractView from "./abstract.js";
 
 const createCostInfoElement = (cost) => {
