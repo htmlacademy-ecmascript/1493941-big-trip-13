@@ -19,6 +19,7 @@ export default class Trip {
     this._tripPointsPresenter = {};
     this._currentSortType = SortType.DAY;
 
+
     this._tripListComponent = null;
     this._sortComponent = null;
     this._noPointsComponent = null;
@@ -35,6 +36,7 @@ export default class Trip {
   init(tripPoints) {
     this._tripPoints = tripPoints.slice();
     this._sourcedtripPoints = tripPoints.slice();
+
     this._tripInfoComponent = new TripInfoView(this._tripPoints);
     this._costInfoComponent = new CostInfoView(this._tripPoints);
     this._menuComponent = new MenuView();
@@ -128,7 +130,6 @@ export default class Trip {
     this._tripPoints = updateItem(this._tripPoints, updatedPoint);
     this._tripPointsPresenter[updatedPoint.id].init(updatedPoint);
   }
-
 
   _clearTripPointList() {
     Object
