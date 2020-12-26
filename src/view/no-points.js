@@ -5,10 +5,6 @@ const createNoPointsElement = () => {
 };
 
 export default class TripList extends AbstractView {
-  constructor() {
-    super();
-  }
-
   getTemplate() {
     return createNoPointsElement();
   }
