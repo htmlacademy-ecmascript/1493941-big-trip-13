@@ -24,7 +24,7 @@ const getDatesDuration = (startDate, endDate) => {
   return `${addLeadingZero(durationMinutes % ONE_HOURS_MINUTES)}M`;
 };
 
-const sortByTime = (A, B) => {
+const sortByDuration = (A, B) => {
   const durationA = dayjs(A.dateTime.end).diff(dayjs(A.dateTime.start));
   const durationB = dayjs(B.dateTime.end).diff(dayjs(B.dateTime.start));
 
@@ -38,6 +38,6 @@ const sortByPrice = (A, B) => {
 
 export {
   getDatesDuration,
-  sortByTime,
+  sortByDuration,
   sortByPrice
 };

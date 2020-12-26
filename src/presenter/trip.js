@@ -8,7 +8,7 @@ import SorterView from "../view/sorter";
 import NoPointsView from "../view/no-points";
 import PointPresenter from "./point.js";
 import {updateItem} from "../utils/common.js";
-import {sortByTime, sortByPrice} from "../utils/util.js";
+import {sortByDuration, sortByPrice} from "../utils/util.js";
 import {SortType} from "../const.js";
 
 export default class Trip {
@@ -52,13 +52,13 @@ export default class Trip {
   _sortPoints(sortType) {
     switch (sortType) {
       case SortType.TIME:
-        this._tripPoints.sort(sortByTime);
+        this._tripPoints.sort(sortByDuration);
         break;
       case SortType.PRICE:
         this._tripPoints.sort(sortByPrice);
         break;
       default:
-        this._tripPoints = this._sourcedtripPoints.slice();
+        this._tripPoints = this._sourcedtripPoints;
     }
 
     this._currentSortType = sortType;
