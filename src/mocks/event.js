@@ -99,7 +99,7 @@ const pointDescription = [
   `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. `,
   `Sed sed nisi sed augue convallis suscipit in sed felis. `,
   `Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. `,
-  `In rutrum ac purus sit amet tempus.`
+  `In rutrum ac purus sit amet tempus.`,
 ];
 
 const generateDate = () => {
@@ -126,7 +126,6 @@ const generateOfferOptions = (type) => {
 };
 
 const generateDescription = () => {
-
   return pointDescription.slice(getRandomInteger(1, pointDescription.length - 1)).join(``);
 };
 
@@ -135,6 +134,7 @@ const generatePhotos = () => {
 };
 
 const generateEvent = () => {
+  const eventDates = generateDate();
   const type = pointTypes[getRandomInteger(0, pointTypes.length - 1)];
   return {
     id: generateId(),
@@ -143,12 +143,13 @@ const generateEvent = () => {
     offers: generateOfferOptions(type),
     description: generateDescription(),
     photo: generatePhotos(),
-    dateTime: {
-      start: generateDate().startDate,
-      end: generateDate().endDate,
+    dates: {
+      start: eventDates.startDate,
+      end: eventDates.endDate,
+      duration: dayjs(eventDates.endDate).diff(dayjs(eventDates.startDate)),
     },
     price: getRandomInteger(0, 200),
-    isFavorite: Boolean(getRandomInteger(0, 1))
+    isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };
 

@@ -19,7 +19,6 @@ export default class Trip {
     this._tripPointsPresenter = {};
     this._currentSortType = SortType.DAY;
 
-
     this._tripListComponent = null;
     this._sortComponent = null;
     this._noPointsComponent = null;
@@ -67,7 +66,6 @@ export default class Trip {
       default:
         this._tripPoints = this._sourcedtripPoints;
     }
-
     this._currentSortType = sortType;
   }
 
@@ -75,7 +73,6 @@ export default class Trip {
     if (this._currentSortType === sortType) {
       return;
     }
-
     this._sortPoints(sortType);
     this._clearTripPointList();
     this._renderTripPoints();

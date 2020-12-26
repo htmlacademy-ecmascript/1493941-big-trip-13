@@ -4,23 +4,23 @@ import dayjs from "dayjs";
 import AbstractView from "./abstract.js";
 
 const createTripPointElement = (event) => {
-  const {type, destination, offers, dateTime, price, isFavorite} = event;
+  const {type, destination, offers, dates, price, isFavorite} = event;
   const eventOptions = offerOptions[type];
 
   return `<li class="trip-events__item">
   <div class="event">
-    <time class="event__date" datetime="${dayjs(dateTime.start).format(`DD/MM/YY HH:mm`)}">${dayjs(dateTime.start).format(`MMM DD`)}</time>
+    <time class="event__date" datetime="${dayjs(dates.start).format(`DD/MM/YY HH:mm`)}">${dayjs(dates.start).format(`MMM DD`)}</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
     </div>
     <h3 class="event__title">${type} ${destination}</h3>
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="${dayjs(dateTime.start).format(`DD/MM/YY HH:mm`)}">${dayjs(dateTime.start).format(`HH:mm`)}</time>
+        <time class="event__start-time" datetime="${dayjs(dates.start).format(`DD/MM/YY HH:mm`)}">${dayjs(dates.start).format(`HH:mm`)}</time>
         &mdash;
-        <time class="event__end-time" datetime="${dayjs(dateTime.end).format(`DD/MM/YY HH:mm`)}">${dayjs(dateTime.end).format(`HH:mm`)}</time>
+        <time class="event__end-time" datetime="${dayjs(dates.end).format(`DD/MM/YY HH:mm`)}">${dayjs(dates.end).format(`HH:mm`)}</time>
       </p>
-      <p class="event__duration">${getDatesDuration(dateTime.start, dateTime.end)}</p>
+      <p class="event__duration">${getDatesDuration(dates.start, dates.end)}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${price}</span>
