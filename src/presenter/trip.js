@@ -8,8 +8,8 @@ import SorterView from "../view/sorter.js";
 import NoPointsView from "../view/no-points.js";
 import PointPresenter from "./point.js";
 import {updateItem} from "../utils/common.js";
-import {sortByDuration, sortByPrice} from "../utils/util.js";
-import {SortType} from "../const.js";
+import {sortTripPoints} from "../utils/util.js";
+import {SortType} from "../const";
 
 export default class Trip {
   constructor(tripInfoContainer, tripMenuContainer, tripPointsContainer) {
@@ -34,7 +34,6 @@ export default class Trip {
 
   init(tripPoints) {
     this._tripPoints = tripPoints.slice();
-    this._sourcedtripPoints = tripPoints.slice();
 
     this._tripInfoComponent = new TripInfoView(this._tripPoints);
     this._costInfoComponent = new CostInfoView(this._tripPoints);
@@ -55,25 +54,11 @@ export default class Trip {
     }
   }
 
-  _sortPoints(sortType) {
-    switch (sortType) {
-      case SortType.TIME:
-        this._tripPoints.sort(sortByDuration);
-        break;
-      case SortType.PRICE:
-        this._tripPoints.sort(sortByPrice);
-        break;
-      default:
-        this._tripPoints = this._sourcedtripPoints;
-    }
-    this._currentSortType = sortType;
-  }
-
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
     }
-    this._sortPoints(sortType);
+    this._currentSortType = sortType;
     this._clearTripPointList();
     this._renderTripPoints();
   }
@@ -119,6 +104,7 @@ export default class Trip {
   }
 
   _renderTripPoints() {
+    this._tripPoints = sortTripPoints(this._tripPoints, this._currentSortType);
     this._tripPoints
       .forEach((tripPoint) => this._renderPoint(tripPoint));
   }

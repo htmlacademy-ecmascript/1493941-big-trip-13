@@ -1,5 +1,5 @@
 export const SortType = {
   DAY: `day`,
-  TIME: `time`,
+  DURATION: `duration`,
   PRICE: `price`
 };
