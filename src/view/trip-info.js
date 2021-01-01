@@ -14,7 +14,7 @@ const createTripInfoElement = (tripDestination, tripDuration) => {
 export default class TripInfo extends AbstractView {
   constructor(array) {
     super();
-    this._tripDestination = `${dayjs(array[0].dateTime.start).format(`MMM DD`)}&nbsp;—&nbsp;${dayjs(array[array.length - 1].dateTime.end).format(`DD`)}`;
+    this._tripDestination = `${dayjs(array[0].dates.start).format(`MMM DD`)}&nbsp;—&nbsp;${dayjs(array[array.length - 1].dates.end).format(`DD`)}`;
     this._tripDuration = `${array[0].destination} &mdash; ... &mdash; ${array[array.length - 1].destination}`;
   }
 

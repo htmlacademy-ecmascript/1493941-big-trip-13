@@ -8,6 +8,8 @@ import SorterView from "../view/sorter.js";
 import NoPointsView from "../view/no-points.js";
 import PointPresenter from "./point.js";
 import {updateItem} from "../utils/common.js";
+import {sortTripPoints} from "../utils/util.js";
+import {SortType} from "../const";
 
 export default class Trip {
   constructor(tripInfoContainer, tripMenuContainer, tripPointsContainer) {
@@ -15,6 +17,7 @@ export default class Trip {
     this._tripMenuContainer = tripMenuContainer;
     this._tripPointsContainer = tripPointsContainer;
     this._tripPointsPresenter = {};
+    this._currentSortType = SortType.DAY;
 
     this._tripListComponent = null;
     this._sortComponent = null;
@@ -26,6 +29,7 @@ export default class Trip {
 
     this._handleTripPointChange = this._handleTripPointChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(tripPoints) {
@@ -50,6 +54,15 @@ export default class Trip {
     }
   }
 
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+    this._currentSortType = sortType;
+    this._clearTripPointList();
+    this._renderTripPoints();
+  }
+
   _handleModeChange() {
     Object
       .values(this._tripPointsPresenter)
@@ -58,6 +71,7 @@ export default class Trip {
 
   _renderSort() {
     render(this._tripPointsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderNoPoints() {
@@ -90,6 +104,7 @@ export default class Trip {
   }
 
   _renderTripPoints() {
+    this._tripPoints = sortTripPoints(this._tripPoints, this._currentSortType);
     this._tripPoints
       .forEach((tripPoint) => this._renderPoint(tripPoint));
   }

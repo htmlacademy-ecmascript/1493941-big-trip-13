@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import AbstractView from "./abstract.js";
 
 const createEditPointElement = (event) => {
-  const {type, destination, offers, dateTime, price, photo, description} = event;
+  const {type, destination, offers, dates, price, photo, description} = event;
   let destinationString = ``;
   let photoString = ``;
   const creatOffersListElement = (options) => {
@@ -116,10 +116,10 @@ const createEditPointElement = (event) => {
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateTime.start).format(`DD/MM/YY HH:mm`)}">
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dates.start).format(`DD/MM/YY HH:mm`)}">
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateTime.end).format(`DD/MM/YY HH:mm`)}">
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dates.end).format(`DD/MM/YY HH:mm`)}">
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
