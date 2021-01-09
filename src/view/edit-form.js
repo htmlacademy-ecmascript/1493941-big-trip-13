@@ -165,6 +165,7 @@ export default class PointEditForm extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setSubmitHandler(this._callback.submitClick);
+    this.setCloseClickHandler(this._callback.submitClick);
   }
 
   _changeTypeHandler(evt) {
@@ -172,6 +173,7 @@ export default class PointEditForm extends SmartView {
     this.updateData({
       type: evt.target.value,
       isOffersOptions: Boolean(offerOptions[evt.target.value]),
+      offers: [],
     });
   }
 
