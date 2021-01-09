@@ -16,11 +16,8 @@ const BLANK_EVENT = {
   isFavorite: false,
 };
 
-let isSubmitDisabled = false;
-
-const creatOffersListElement = (options, isOffersOptions, offers) => {
-  if (isOffersOptions) {
-    return `<section class="event__section  event__section--offers">
+const createOffersListElement = (options, offers) => {
+  return `<section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                       <div class="event__available-offers">
     ${Object.entries(options).map((value) => `<div class="event__offer-selector">
@@ -31,53 +28,24 @@ const creatOffersListElement = (options, isOffersOptions, offers) => {
                 <span class="event__offer-price">${value[1].price}</span>
             </label>
     </div>`).join(``)}</div></section>`;
-  } else {
-    return ``;
-  }
 };
 
-const creatDestinationListElement = (description, isDestinationDescription) => {
-  if (isDestinationDescription) {
-    return `<section class="event__section  event__section--destination">
+const createDestinationListElement = (description) => {
+  return `<section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${description}</p>
                   </section>`;
-  } else {
-    return ``;
-  }
 };
 
-
-const creatPhotoListElement = (photo, isPhoto) => {
-  let photoString = ``;
-  if (isPhoto) {
-    for (const item of photo) {
-      photoString = photoString + `<img class="event__photo" src="${item}" alt="Event photo">`;
-    }
-
-    return `<div class="event__photos-container">
+const createPhotoListElement = (photo) => {
+  return `<div class="event__photos-container">
                       <div class="event__photos-tape">
-                        ${photoString}
+                        ${photo.map((item) => `<img class="event__photo" src="${item}" alt="Event photo">`).join(``)}
                       </div>
                     </div>`;
-  } else {
-    return ``;
-  }
 };
 
-const createEditPointElement = (data) => {
-  const {
-    type,
-    destination,
-    offers,
-    dates,
-    price,
-    photo,
-    description,
-    isDestinationDescription,
-    isPhoto,
-    isOffersOptions,
-  } = data;
+const createEditPointElement = (data, isSubmitDisabled) => {
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -85,7 +53,7 @@ const createEditPointElement = (data) => {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="img/icons/${data.type.toLowerCase()}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -93,7 +61,7 @@ const createEditPointElement = (data) => {
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
                         ${pointTypes.map((pointType) => `<div class="event__type-item">
-                          <input id="event-type-${pointType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === type ? `checked` : ``}>
+                          <input id="event-type-${pointType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === data.type ? `checked` : ``}>
                           <label class="event__type-label  event__type-label--${pointType.toLowerCase()}" for="event-type-${pointType.toLowerCase()}-1">${pointType}</label>
                         </div>`).join(``)}
                       </fieldset>
@@ -101,9 +69,9 @@ const createEditPointElement = (data) => {
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
-                    <label class="event__label  event__type-output" for="event-destination-1">${type}
+                    <label class="event__label  event__type-output" for="event-destination-1">${data.type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${data.destination}" list="destination-list-1">
                     <datalist id="destination-list-1">
                     ${pointDestinations.map((name) => `<option value="${name}"></option>`).join(``)}
                     </datalist>
@@ -111,10 +79,10 @@ const createEditPointElement = (data) => {
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dates.start).format(`DD/MM/YY HH:mm`)}">
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(data.dates.start).format(`DD/MM/YY HH:mm`)}">
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dates.end).format(`DD/MM/YY HH:mm`)}">
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(data.dates.end).format(`DD/MM/YY HH:mm`)}">
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -122,7 +90,7 @@ const createEditPointElement = (data) => {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${data.price}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? `disabled` : ``}>Save</button>
@@ -132,18 +100,19 @@ const createEditPointElement = (data) => {
                   </button>
                 </header>
                 <section class="event__details">
-                ${creatOffersListElement(offerOptions[type], isOffersOptions, offers)}
-                ${creatDestinationListElement(description, isDestinationDescription)}
-                ${creatPhotoListElement(photo, isPhoto)}
+                ${data.isOffersOptions ? createOffersListElement(offerOptions[data.type], data.offers) : ``}
+                ${data.isDestinationDescription ? createDestinationListElement(data.description) : ``}
+                ${data.isPhoto ? createPhotoListElement(data.photo) : ``}
                 </section>
               </form>
             </li>`;
 };
 
-export default class PointEditForm extends SmartView {
+export default class EditForm extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
-    this._data = PointEditForm.parseEventToData(event);
+    this._data = EditForm.adaptEventToData(event);
+    this.isSubmitDisabled = false;
 
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._submitHandler = this._submitHandler.bind(this);
@@ -156,11 +125,11 @@ export default class PointEditForm extends SmartView {
   }
 
   reset(event) {
-    this.updateData(PointEditForm.parseEventToData(event));
+    this.updateData(EditForm.adaptEventToData(event));
   }
 
   getTemplate() {
-    return createEditPointElement(this._data);
+    return createEditPointElement(this._data, this.isSubmitDisabled);
   }
 
   restoreHandlers() {
@@ -197,7 +166,7 @@ export default class PointEditForm extends SmartView {
   _changeDestinationHandler(evt) {
     evt.preventDefault();
     if (pointDestinations.includes(evt.target.value)) {
-      isSubmitDisabled = false;
+      this.isSubmitDisabled = false;
       this.updateData({
         destination: evt.target.value,
         description: point[evt.target.value.toUpperCase()].description,
@@ -206,7 +175,7 @@ export default class PointEditForm extends SmartView {
         isDestinationPhoto: point[evt.target.value.toUpperCase()].photo !== ``,
       });
     } else {
-      isSubmitDisabled = true;
+      this.isSubmitDisabled = true;
       this.getElement().querySelector(`.event__save-btn`).disabled = true;
     }
   }
@@ -247,7 +216,7 @@ export default class PointEditForm extends SmartView {
 
   _submitHandler(evt) {
     evt.preventDefault();
-    this._callback.submitClick(PointEditForm.parseDataToEvent(this._data));
+    this._callback.submitClick(EditForm.adaptDataToEvent(this._data));
   }
 
   setSubmitHandler(callback) {
@@ -255,7 +224,7 @@ export default class PointEditForm extends SmartView {
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._submitHandler);
   }
 
-  static parseEventToData(event) {
+  static adaptEventToData(event) {
     return Object.assign({}, event, {
       isDestinationDescription: event.description !== ``,
       isPhoto: event.photo !== [],
@@ -263,7 +232,7 @@ export default class PointEditForm extends SmartView {
     });
   }
 
-  static parseDataToEvent(data) {
+  static adaptDataToEvent(data) {
     data = Object.assign({}, data);
 
     delete data.isDestinationDescription;
