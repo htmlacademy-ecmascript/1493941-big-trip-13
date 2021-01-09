@@ -150,6 +150,7 @@ export default class PointEditForm extends SmartView {
     this._changeTypeHandler = this._changeTypeHandler.bind(this);
     this._changeDestinationHandler = this._changeDestinationHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._changeOffersHandler = this._changeOffersHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -175,6 +176,22 @@ export default class PointEditForm extends SmartView {
       isOffersOptions: Boolean(offerOptions[evt.target.value]),
       offers: [],
     });
+  }
+
+  _changeOffersHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.checked) {
+      const newOffersOption = evt.target.dataset.name;
+      this.updateData({
+        offers: this._data.offers.concat(newOffersOption),
+      }, true);
+    }
+    if (!evt.target.checked) {
+      const indexOffersOption = this._data.offers.indexOf(evt.target.dataset.name);
+      this.updateData({
+        offers: this._data.offers.splice(indexOffersOption, 1),
+      });
+    }
   }
 
   _changeDestinationHandler(evt) {
@@ -211,6 +228,11 @@ export default class PointEditForm extends SmartView {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`input`, this._priceInputHandler);
+    if (this._data.isOffersOptions) {
+      this.getElement()
+        .querySelector(`.event__available-offers`)
+        .addEventListener(`change`, this._changeOffersHandler);
+    }
   }
 
   _closeClickHandler(evt) {
