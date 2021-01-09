@@ -14,7 +14,7 @@ const pointTypeEnum = {
   FLIGHT: `Flight`,
   CHECKIN: `Check-in`,
   SIGHTSEEING: `Sightseeing`,
-  RESTARAURANT: `Restaurant`,
+  RESTAURANT: `Restaurant`,
 };
 const pointTypes = [
   pointTypeEnum.TAXI,
@@ -26,7 +26,7 @@ const pointTypes = [
   pointTypeEnum.FLIGHT,
   pointTypeEnum.CHECKIN,
   pointTypeEnum.SIGHTSEEING,
-  pointTypeEnum.RESTARAURANT,
+  pointTypeEnum.RESTAURANT,
 ];
 const pointDestinations = [
   `Chamonix`,
@@ -133,16 +133,44 @@ const generatePhotos = () => {
   return Array(getRandomInteger(0, 5)).fill().map(() => `${PHOTO_PATH}${getRandomInteger(1, 15)}`);
 };
 
+const point = {
+  CHAMONIX: {
+    description: generateDescription(),
+    photo: generatePhotos(),
+  },
+  GENEVA: {
+    description: generateDescription(),
+    photo: generatePhotos(),
+  },
+  AMSTERDAM: {
+    description: generateDescription(),
+    photo: generatePhotos(),
+  },
+  NICE: {
+    description: generateDescription(),
+    photo: generatePhotos(),
+  },
+  MONACO: {
+    description: generateDescription(),
+    photo: generatePhotos(),
+  },
+  MENTON: {
+    description: generateDescription(),
+    photo: generatePhotos(),
+  }
+};
+
 const generateEvent = () => {
   const eventDates = generateDate();
   const type = pointTypes[getRandomInteger(0, pointTypes.length - 1)];
+  const destination = pointDestinations[getRandomInteger(0, pointDestinations.length - 1)];
   return {
     id: generateId(),
     type,
-    destination: pointDestinations [getRandomInteger(0, pointDestinations.length - 1)],
+    destination,
     offers: generateOfferOptions(type),
-    description: generateDescription(),
-    photo: generatePhotos(),
+    description: point[destination.toUpperCase()].description,
+    photo: point[destination.toUpperCase()].photo,
     dates: {
       start: eventDates.startDate,
       end: eventDates.endDate,
@@ -158,4 +186,5 @@ export {
   offerOptions,
   pointDestinations,
   pointTypes,
+  point
 };

@@ -47,5 +47,5 @@ const sortTripPoints = (tripPoints, sortType) => {
 export {
   getDatesDuration,
   sortByDate,
-  sortTripPoints,
+  sortTripPoints
 };
