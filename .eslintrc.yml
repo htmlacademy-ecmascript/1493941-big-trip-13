@@ -8,3 +8,6 @@ env:
   commonjs: true
 
 extends: 'htmlacademy/es6'
+
+rules:
+  camelcase: ["error", {allow: ["time_24hr"]}]

@@ -1,6 +1,9 @@
 import {offerOptions, pointDestinations, pointTypes, point} from "../mocks/event.js";
 import SmartView from "../presenter/smart.js";
 import dayjs from "dayjs";
+import flatpickr from "flatpickr";
+
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
   type: ``,
@@ -113,6 +116,8 @@ export default class EditForm extends SmartView {
     super();
     this._data = EditForm.adaptEventToData(event);
     this.isSubmitDisabled = false;
+    this._startDatepicker = null;
+    this._endDatepicker = null;
 
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._submitHandler = this._submitHandler.bind(this);
@@ -120,8 +125,11 @@ export default class EditForm extends SmartView {
     this._changeDestinationHandler = this._changeDestinationHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._changeOffersHandler = this._changeOffersHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   reset(event) {
@@ -136,6 +144,41 @@ export default class EditForm extends SmartView {
     this._setInnerHandlers();
     this.setSubmitHandler(this._callback.submitClick);
     this.setCloseClickHandler(this._callback.submitClick);
+    this._setDatepicker();
+  }
+
+  _setDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
+
+    this._startDatepicker = flatpickr(
+        this.getElement().querySelector(`#event-start-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          enableTime: true,
+          time_24hr: true,
+          defaultDate: this._data.dates.start,
+          onClose: this._startDateChangeHandler
+        }
+    );
+
+    this._endDatepicker = flatpickr(
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          enableTime: true,
+          time_24hr: true,
+          minDate: this._data.dates.start,
+          defaultDate: this._data.dates.end,
+          onClose: this._endDateChangeHandler
+        }
+    );
   }
 
   _changeTypeHandler(evt) {
@@ -153,12 +196,13 @@ export default class EditForm extends SmartView {
       const newOffersOption = evt.target.dataset.name;
       this.updateData({
         offers: this._data.offers.concat(newOffersOption),
-      }, true);
+      });
     }
     if (!evt.target.checked) {
       const indexOffersOption = this._data.offers.indexOf(evt.target.dataset.name);
+      this._data.offers.splice(indexOffersOption, 1);
       this.updateData({
-        offers: this._data.offers.splice(indexOffersOption, 1),
+        offers: this._data.offers,
       });
     }
   }
@@ -203,6 +247,25 @@ export default class EditForm extends SmartView {
         .addEventListener(`change`, this._changeOffersHandler);
     }
   }
+
+  _startDateChangeHandler([userDate]) {
+    this.updateData({
+      dates: {
+        start: dayjs([userDate]).toDate(),
+        end: this._data.dates.end,
+      }
+    });
+  }
+
+  _endDateChangeHandler([userDate]) {
+    this.updateData({
+      dates: {
+        start: this._data.dates.start,
+        end: dayjs([userDate]).toDate(),
+      }
+    });
+  }
+
 
   _closeClickHandler(evt) {
     evt.preventDefault();
