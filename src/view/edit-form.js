@@ -196,12 +196,13 @@ export default class EditForm extends SmartView {
       const newOffersOption = evt.target.dataset.name;
       this.updateData({
         offers: this._data.offers.concat(newOffersOption),
-      }, true);
+      });
     }
     if (!evt.target.checked) {
       const indexOffersOption = this._data.offers.indexOf(evt.target.dataset.name);
+      this._data.offers.splice(indexOffersOption, 1);
       this.updateData({
-        offers: this._data.offers.splice(indexOffersOption, 1),
+        offers: this._data.offers,
       });
     }
   }
