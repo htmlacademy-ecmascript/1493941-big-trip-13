@@ -7,10 +7,10 @@ export default class Offers extends Observer {
   }
 
   setOffers(offers) {
-    this._offers = offers.slice();
+    this._offers = offers;
   }
 
-  getOffers(type) {
-    return this._offers.find((offer) => offer.type === type);
+  getOffers() {
+    return this._offers;
   }
 }

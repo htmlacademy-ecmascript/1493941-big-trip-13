@@ -9,10 +9,11 @@ const Mode = {
 };
 
 export default class Point {
-  constructor(tripPointsContainer, changeData, changeMode) {
+  constructor(tripPointsContainer, changeData, changeMode, currentSortType) {
     this._tripPointsContainer = tripPointsContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._currentSortType = currentSortType;
 
     this._tripPointComponent = null;
     this._tripPointEditComponent = null;
