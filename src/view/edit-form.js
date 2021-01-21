@@ -6,7 +6,7 @@ import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
-  type: ``,
+  type: pointTypes[0],
   destination: ``,
   offers: [],
   description: ``,
@@ -43,7 +43,7 @@ const createDestinationListElement = (description) => {
 const createPhotoListElement = (photo) => {
   return `<div class="event__photos-container">
                       <div class="event__photos-tape">
-                        ${photo.map((item) => `<img class="event__photo" src="${item}" alt="Event photo">`).join(``)}
+                        ${photo.map((item) => `<img class="event__photo" src="${item.src}" alt="${item.description}">`).join(``)}
                       </div>
                     </div>`;
 };

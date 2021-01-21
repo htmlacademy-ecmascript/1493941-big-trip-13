@@ -11,6 +11,7 @@ const EVENT_COUNT = 6;
 const tripMain = document.querySelector(`.trip-main`);
 const tripControlsTitle = document.querySelector(`.trip-controls :last-child`);
 const tripPointsContainer = document.querySelector(`.trip-events`);
+const addButton = tripMain.querySelector(`.trip-main__event-add-btn`);
 
 const eventsPoints = new Array(EVENT_COUNT).fill().map(generateEvent);
 
@@ -28,8 +29,9 @@ const filterPresenter = new FilterPresenter(tripControlsTitle, filterModel, poin
 tripPresenter.init();
 filterPresenter.init();
 
-tripMain.querySelector(`.trip-main__event-add-btn`)
+addButton
   .addEventListener(`click`, (evt) => {
     evt.preventDefault();
-    tripPresenter._renderPoint();
+    tripPresenter.createPoint();
+    addButton.disabled = true;
   });

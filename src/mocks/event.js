@@ -185,6 +185,7 @@ const generateEvent = () => {
 };
 
 export {
+  generateId,
   generateEvent,
   offerOptions,
   pointDestinations,

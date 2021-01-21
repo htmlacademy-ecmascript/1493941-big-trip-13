@@ -7,8 +7,9 @@ import TripListView from "../view/trip-list.js";
 import SorterView from "../view/sorter.js";
 import NoPointsView from "../view/no-points.js";
 import PointPresenter from "./point.js";
+import NewPointPresenter from "./new-point.js";
 import {sortByDate, sortByDuration, sortByPrice} from "../utils/util.js";
-import {SortType, UpdateType, UserAction} from "../const";
+import {SortType, UpdateType, UserAction, FilterType} from "../const";
 
 export default class Trip {
   constructor(tripInfoContainer, tripMenuContainer, tripPointsContainer, pointsModel, offersModel, destinationsModel, filterModel) {
@@ -19,8 +20,9 @@ export default class Trip {
     this._tripPointsContainer = tripPointsContainer;
     this._tripPointsPresenter = {};
     this._currentSortType = SortType.DAY;
+    this._tripPointsList = null;
 
-    this._tripListComponent = null;
+    this._tripListComponent = new TripListView();
     this._sortComponent = null;
     this._noPointsComponent = null;
     this._tripInfoComponent = null;
@@ -34,6 +36,8 @@ export default class Trip {
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._NewPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction);
   }
 
   init() {
@@ -42,11 +46,16 @@ export default class Trip {
     this._costInfoComponent = new CostInfoView(this.points);
     this._menuComponent = new MenuView();
 
-    this._tripListComponent = new TripListView(this.points);
     this._noPointsComponent = new NoPointsView();
 
     this._renderMenu();
     this._renderTrip();
+  }
+
+  createPoint() {
+    this._currentSortType = SortType.DAY;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._NewPointPresenter.init();
   }
 
   _getPoints() {
@@ -176,7 +185,7 @@ export default class Trip {
     remove(this._noPointsComponent);
 
     if (resetSortType) {
-      this._currentSortType = SortType.DEFAULT;
+      this._currentSortType = SortType.DAY;
     }
   }
 
