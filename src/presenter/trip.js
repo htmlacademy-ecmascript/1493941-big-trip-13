@@ -20,7 +20,6 @@ export default class Trip {
     this._tripPointsContainer = tripPointsContainer;
     this._tripPointsPresenter = {};
     this._currentSortType = SortType.DAY;
-    this._tripPointsList = null;
 
     this._tripListComponent = new TripListView();
     this._sortComponent = null;

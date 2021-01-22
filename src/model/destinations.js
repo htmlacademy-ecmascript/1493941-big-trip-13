@@ -10,7 +10,7 @@ export default class Destinations extends Observer {
     this._destinations = destinations;
   }
 
-  getOffers() {
+  getDestinations() {
     return this._destinations;
   }
 }
