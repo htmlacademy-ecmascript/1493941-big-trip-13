@@ -21,7 +21,7 @@ export default class Trip {
     this._tripPointsPresenter = {};
     this._currentSortType = SortType.DAY;
 
-    this._tripListComponent = new TripListView();
+    this._tripListComponent = null;
     this._sortComponent = null;
     this._noPointsComponent = null;
     this._tripInfoComponent = null;
@@ -35,8 +35,6 @@ export default class Trip {
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
-
-    this._NewPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction);
   }
 
   init() {
@@ -44,6 +42,7 @@ export default class Trip {
     this._tripInfoComponent = new TripInfoView(this.points);
     this._costInfoComponent = new CostInfoView(this.points);
     this._menuComponent = new MenuView();
+    this._tripListComponent = new TripListView();
 
     this._noPointsComponent = new NoPointsView();
 
@@ -54,7 +53,8 @@ export default class Trip {
   createPoint() {
     this._currentSortType = SortType.DAY;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._NewPointPresenter.init();
+    this._newPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction);
+    this._newPointPresenter.init();
   }
 
   _getPoints() {

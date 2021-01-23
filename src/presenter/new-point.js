@@ -3,16 +3,19 @@ import {UserAction, UpdateType} from "../const.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {generateId} from "../mocks/event.js";
 
-export default class newPoint {
+export default class NewPoint {
   constructor(tripPointsContainer, changeData) {
     this._tripPointsContainer = tripPointsContainer;
     this._changeData = changeData;
+    this._isNewPoint = true;
 
     this._tripPointEditComponent = null;
 
     this._handleSubmit = this._handleSubmit.bind(this);
+    this._handleCloseClick = this._handleCloseClick.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._renderForm = this._renderForm.bind(this);
   }
 
   init() {
@@ -20,15 +23,18 @@ export default class newPoint {
       return;
     }
 
-    this._tripPointEditComponent = new PointEditFormView();
+    this._tripPointEditComponent = new PointEditFormView({}, true);
 
     this._tripPointEditComponent.setSubmitHandler(this._handleSubmit);
+    this._tripPointEditComponent.setCloseClickHandler(this._handleCloseClick);
     this._tripPointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
-    render(this._tripPointsContainer, this._tripPointEditComponent, RenderPosition.AFTERBEGIN);
+    this._renderForm();
+  }
 
+  _renderForm() {
+    render(this._tripPointsContainer, this._tripPointEditComponent, RenderPosition.AFTERBEGIN);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
-    document.querySelector(`.event__reset-btn`).textContent = `Cancel`;
   }
 
   destroy() {
@@ -57,5 +63,9 @@ export default class newPoint {
       evt.preventDefault();
       this.destroy();
     }
+  }
+
+  _handleCloseClick() {
+    this.destroy();
   }
 }

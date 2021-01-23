@@ -1,5 +1,5 @@
 import {offerOptions, pointDestinations, pointTypes, point} from "../mocks/event.js";
-import SmartView from "../presenter/smart.js";
+import SmartView from "./smart.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 
@@ -48,7 +48,7 @@ const createPhotoListElement = (photo) => {
                     </div>`;
 };
 
-const createEditPointElement = (data, isSubmitDisabled) => {
+const createEditPointElement = (data, isSubmitDisabled, isNewPoint) => {
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -97,7 +97,7 @@ const createEditPointElement = (data, isSubmitDisabled) => {
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? `disabled` : ``}>Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
+                  <button class="event__reset-btn" type="reset">${isNewPoint ? `Cancel` : `Delete`}</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>
@@ -112,9 +112,10 @@ const createEditPointElement = (data, isSubmitDisabled) => {
 };
 
 export default class EditForm extends SmartView {
-  constructor(event = BLANK_EVENT) {
+  constructor(event, isNewPoint) {
     super();
-    this._data = EditForm.adaptEventToData(event);
+    this.isNewPoint = isNewPoint;
+    this._data = this.isNewPoint ? EditForm.adaptEventToData(BLANK_EVENT) : EditForm.adaptEventToData(event);
     this.isSubmitDisabled = false;
     this._startDatepicker = null;
     this._endDatepicker = null;
@@ -152,13 +153,13 @@ export default class EditForm extends SmartView {
   }
 
   getTemplate() {
-    return createEditPointElement(this._data, this.isSubmitDisabled);
+    return createEditPointElement(this._data, this.isSubmitDisabled, this.isNewPoint);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this.setSubmitHandler(this._callback.submitClick);
-    this.setCloseClickHandler(this._callback.submitClick);
+    this.setCloseClickHandler(this._callback.closeClick);
     this._setDatepicker();
     this.setDeleteClickHandler(this._callback.deleteClick);
   }
