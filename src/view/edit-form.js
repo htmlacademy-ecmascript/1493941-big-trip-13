@@ -1,12 +1,12 @@
 import {offerOptions, pointDestinations, pointTypes, point} from "../mocks/event.js";
-import SmartView from "../presenter/smart.js";
+import SmartView from "./smart.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
-  type: ``,
+  type: pointTypes[0],
   destination: ``,
   offers: [],
   description: ``,
@@ -43,12 +43,12 @@ const createDestinationListElement = (description) => {
 const createPhotoListElement = (photo) => {
   return `<div class="event__photos-container">
                       <div class="event__photos-tape">
-                        ${photo.map((item) => `<img class="event__photo" src="${item}" alt="Event photo">`).join(``)}
+                        ${photo.map((item) => `<img class="event__photo" src="${item.src}" alt="${item.description}">`).join(``)}
                       </div>
                     </div>`;
 };
 
-const createEditPointElement = (data, isSubmitDisabled) => {
+const createEditPointElement = (data, isSubmitDisabled, isNewPoint) => {
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -97,7 +97,7 @@ const createEditPointElement = (data, isSubmitDisabled) => {
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? `disabled` : ``}>Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
+                  <button class="event__reset-btn" type="reset">${isNewPoint ? `Cancel` : `Delete`}</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>
@@ -112,9 +112,10 @@ const createEditPointElement = (data, isSubmitDisabled) => {
 };
 
 export default class EditForm extends SmartView {
-  constructor(event = BLANK_EVENT) {
+  constructor(event, isNewPoint) {
     super();
-    this._data = EditForm.adaptEventToData(event);
+    this.isNewPoint = isNewPoint;
+    this._data = this.isNewPoint ? EditForm.adaptEventToData(BLANK_EVENT) : EditForm.adaptEventToData(event);
     this.isSubmitDisabled = false;
     this._startDatepicker = null;
     this._endDatepicker = null;
@@ -127,9 +128,24 @@ export default class EditForm extends SmartView {
     this._changeOffersHandler = this._changeOffersHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
+
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
   }
 
   reset(event) {
@@ -137,14 +153,15 @@ export default class EditForm extends SmartView {
   }
 
   getTemplate() {
-    return createEditPointElement(this._data, this.isSubmitDisabled);
+    return createEditPointElement(this._data, this.isSubmitDisabled, this.isNewPoint);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this.setSubmitHandler(this._callback.submitClick);
-    this.setCloseClickHandler(this._callback.submitClick);
+    this.setCloseClickHandler(this._callback.closeClick);
     this._setDatepicker();
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setDatepicker() {
@@ -304,4 +321,15 @@ export default class EditForm extends SmartView {
 
     return data;
   }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditForm.adaptDataToEvent(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
 }

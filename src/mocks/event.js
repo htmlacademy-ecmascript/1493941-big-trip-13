@@ -130,7 +130,10 @@ const generateDescription = () => {
 };
 
 const generatePhotos = () => {
-  return Array(getRandomInteger(0, 5)).fill().map(() => `${PHOTO_PATH}${getRandomInteger(1, 15)}`);
+  return Array(getRandomInteger(0, 5)).fill().map(() => ({
+    "src": `${PHOTO_PATH}${getRandomInteger(1, 15)}`,
+    "description": `PHOTO`,
+  }));
 };
 
 const point = {
@@ -182,6 +185,7 @@ const generateEvent = () => {
 };
 
 export {
+  generateId,
   generateEvent,
   offerOptions,
   pointDestinations,
