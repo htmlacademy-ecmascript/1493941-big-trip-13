@@ -1,12 +1,11 @@
-import {offerOptions, pointDestinations, pointTypes, point} from "../mocks/event.js";
-import SmartView from "./smart.js";
+import SmartView from "./smart-view.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
-  type: pointTypes[0],
+  type: ``,
   destination: ``,
   offers: [],
   description: ``,
@@ -19,16 +18,16 @@ const BLANK_EVENT = {
   isFavorite: false,
 };
 
-const createOffersListElement = (options, offers) => {
+const createOffersListElement = (pointOffers, offers) => {
   return `<section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                       <div class="event__available-offers">
-    ${Object.entries(options).map((value) => `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" data-name="${value[0]}" id="event-offer-${value[0]}-1" type="checkbox" name="event-offer-${value[0]}" ${offers.includes(value[0]) ? `checked` : ``}>
-            <label class="event__offer-label" for="event-offer-${value[0]}-1">
-                <span class="event__offer-title">${value[1].name}</span>
+    ${Object.entries(pointOffers).map((value) => `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" data-name="${value.name}" id="event-offer-${value.name}-1" type="checkbox" name="event-offer-${value.name}" ${offers.findIndex((item) => item.name === value.name) >= 0 ? `checked` : ``}>
+            <label class="event__offer-label" for="event-offer-${value.name}-1">
+                <span class="event__offer-title">${value.name}</span>
                    &plus;&euro;&nbsp;
-                <span class="event__offer-price">${value[1].price}</span>
+                <span class="event__offer-price">${value.price}</span>
             </label>
     </div>`).join(``)}</div></section>`;
 };
@@ -48,7 +47,7 @@ const createPhotoListElement = (photo) => {
                     </div>`;
 };
 
-const createEditPointElement = (data, isSubmitDisabled, isNewPoint) => {
+const createEditPointElement = (data, isSubmitDisabled, offers, pointOffer, pointTypes, destinations, isNewPoint) => {
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -56,7 +55,7 @@ const createEditPointElement = (data, isSubmitDisabled, isNewPoint) => {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/${data.type.toLowerCase()}.png" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="img/icons/${isNewPoint ? pointTypes[0] : data.type.toLowerCase()}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -76,7 +75,7 @@ const createEditPointElement = (data, isSubmitDisabled, isNewPoint) => {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${data.destination}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                    ${pointDestinations.map((name) => `<option value="${name}"></option>`).join(``)}
+                    ${destinations.map((name) => `<option value="${name}"></option>`).join(``)}
                     </datalist>
                   </div>
 
@@ -103,7 +102,7 @@ const createEditPointElement = (data, isSubmitDisabled, isNewPoint) => {
                   </button>
                 </header>
                 <section class="event__details">
-                ${data.isOffersOptions ? createOffersListElement(offerOptions[data.type], data.offers) : ``}
+                ${data.isOffersOptions ? createOffersListElement(offers[data.type], data.offers) : ``}
                 ${data.isDestinationDescription ? createDestinationListElement(data.description) : ``}
                 ${data.isPhoto ? createPhotoListElement(data.photo) : ``}
                 </section>
@@ -111,11 +110,15 @@ const createEditPointElement = (data, isSubmitDisabled, isNewPoint) => {
             </li>`;
 };
 
-export default class EditForm extends SmartView {
-  constructor(event, isNewPoint) {
+export default class EditFormView extends SmartView {
+  constructor(event, isNewPoint, offers, destinations) {
     super();
     this.isNewPoint = isNewPoint;
-    this._data = this.isNewPoint ? EditForm.adaptEventToData(BLANK_EVENT) : EditForm.adaptEventToData(event);
+    this._data = this.isNewPoint ? EditFormView.adaptEventToData(BLANK_EVENT) : EditFormView.adaptEventToData(event);
+    this._offers = offers;
+    this._pointOffer = offers.find((item) => item.type === this._data.type).offers;
+    this._destinations = destinations;
+    this._pointTypes = offers.map((item) => item.type);
     this.isSubmitDisabled = false;
     this._startDatepicker = null;
     this._endDatepicker = null;
@@ -149,11 +152,11 @@ export default class EditForm extends SmartView {
   }
 
   reset(event) {
-    this.updateData(EditForm.adaptEventToData(event));
+    this.updateData(EditFormView.adaptEventToData(event));
   }
 
   getTemplate() {
-    return createEditPointElement(this._data, this.isSubmitDisabled, this.isNewPoint);
+    return createEditPointElement(this._data, this.isSubmitDisabled, this._offers, this._pointOffer, this._pointTypes, this._destinations, this.isNewPoint);
   }
 
   restoreHandlers() {
@@ -202,7 +205,7 @@ export default class EditForm extends SmartView {
     evt.preventDefault();
     this.updateData({
       type: evt.target.value,
-      isOffersOptions: Boolean(offerOptions[evt.target.value]),
+      isOffersOptions: Boolean(this._offers[evt.target.value]),
       offers: [],
     });
   }
@@ -226,14 +229,15 @@ export default class EditForm extends SmartView {
 
   _changeDestinationHandler(evt) {
     evt.preventDefault();
-    if (pointDestinations.includes(evt.target.value)) {
+    if (this._destinations.includes(evt.target.value)) {
+      const destination = this._destinations.filter((item) => item.name === evt.target.value)[0];
       this.isSubmitDisabled = false;
       this.updateData({
         destination: evt.target.value,
-        description: point[evt.target.value.toUpperCase()].description,
-        photo: point[evt.target.value.toUpperCase()].photo,
-        isDestinationDescription: point[evt.target.value.toUpperCase()].description !== ``,
-        isDestinationPhoto: point[evt.target.value.toUpperCase()].photo !== ``,
+        description: destination.description,
+        photo: destination.photo,
+        isDestinationDescription: destination.description !== ``,
+        isDestinationPhoto: destination.photo !== ``,
       });
     } else {
       this.isSubmitDisabled = true;
@@ -296,7 +300,7 @@ export default class EditForm extends SmartView {
 
   _submitHandler(evt) {
     evt.preventDefault();
-    this._callback.submitClick(EditForm.adaptDataToEvent(this._data));
+    this._callback.submitClick(EditFormView.adaptDataToEvent(this._data));
   }
 
   setSubmitHandler(callback) {
@@ -308,7 +312,7 @@ export default class EditForm extends SmartView {
     return Object.assign({}, event, {
       isDestinationDescription: event.description !== ``,
       isPhoto: event.photo !== [],
-      isOffersOptions: Boolean(offerOptions[event.type]),
+      isOffersOptions: Boolean(this._offers[event.type]),
     });
   }
 
@@ -324,7 +328,7 @@ export default class EditForm extends SmartView {
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(EditForm.adaptDataToEvent(this._data));
+    this._callback.deleteClick(EditFormView.adaptDataToEvent(this._data));
   }
 
   setDeleteClickHandler(callback) {

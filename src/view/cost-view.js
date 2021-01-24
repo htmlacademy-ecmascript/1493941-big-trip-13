@@ -1,5 +1,4 @@
-import {offerOptions} from "../mocks/event.js";
-import AbstractView from "./abstract.js";
+import AbstractView from "./abstract-view.js";
 
 const createCostInfoElement = (cost) => {
   return `<p class="trip-info__cost">
@@ -10,12 +9,7 @@ const createCostInfoElement = (cost) => {
 const getTripCost = (array) => {
   let cost = 0;
   for (const item of array) {
-    let offerPrice = 0;
-    if (item.type in offerOptions) {
-      for (const offer of item.offers) {
-        offerPrice += offerOptions[item.type][offer].price;
-      }
-    }
+    const offerPrice = (item.offers.length > 0) ? item.offers.map((offer) => offer.price).reduce((a, b) => a + b) : 0;
     cost += item.price + offerPrice;
   }
 

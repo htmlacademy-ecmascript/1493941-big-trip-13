@@ -1,14 +1,15 @@
 import Observer from "../utils/observer.js";
 import dayjs from "dayjs";
 
-export default class Points extends Observer {
+export default class PointsModel extends Observer {
   constructor() {
     super();
     this._points = [];
   }
 
-  setPoints(points) {
+  setPoints(updateType, points) {
     this._points = points.slice();
+    this._notify(updateType);
   }
 
   getPoints() {
@@ -25,7 +26,7 @@ export default class Points extends Observer {
     this._points = [
       ...this._points.slice(0, index),
       data,
-      ...this._points.slice(index + 1)
+      ...this._points.slice(index + 1),
     ];
 
     this._notify(updateType, data);
@@ -46,7 +47,7 @@ export default class Points extends Observer {
 
     this._points = [
       ...this._points.slice(0, index),
-      ...this._points.slice(index + 1)
+      ...this._points.slice(index + 1),
     ];
 
     this._notify(updateType);
@@ -82,7 +83,16 @@ export default class Points extends Observer {
   static adaptToServer(point) {
     return Object.assign(
         {},
-        point
+        {
+          base_price: point.price,
+          date_from: point.dates.start,
+          date_to: point.dates.end,
+          destination: {name: point.name, description: point.description, pictures: point.photos},
+          id: point.id,
+          is_favorite: point.isFavorite,
+          offers: point.offers,
+          type: point.type,
+        }
     );
   }
 }

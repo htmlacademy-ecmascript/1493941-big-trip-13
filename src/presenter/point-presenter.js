@@ -1,5 +1,5 @@
-import TripPointView from "../view/trip-point.js";
-import PointEditFormView from "../view/edit-form.js";
+import TripPointView from "../view/trip-point-view.js";
+import PointEditFormView from "../view/edit-form-view.js";
 import {UserAction, UpdateType} from "../const.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 
@@ -8,12 +8,11 @@ const Mode = {
   EDITING: `EDITING`,
 };
 
-export default class Point {
-  constructor(tripPointsContainer, changeData, changeMode, currentSortType) {
+export default class PointPresenter {
+  constructor(tripPointsContainer, handleViewAction, handleModeChange) {
     this._tripPointsContainer = tripPointsContainer;
-    this._changeData = changeData;
-    this._changeMode = changeMode;
-    this._currentSortType = currentSortType;
+    this._changeData = handleViewAction;
+    this._changeMode = handleModeChange;
 
     this._tripPointComponent = null;
     this._tripPointEditComponent = null;

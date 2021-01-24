@@ -1,8 +1,10 @@
-import PointsModel from "./model/points";
+import PointsModel from "./model/points-model.js";
 
 const Method = {
   GET: `GET`,
-  PUT: `PUT`
+  PUT: `PUT`,
+  POST: `POST`,
+  DELETE: `DELETE`
 };
 
 const SuccessHTTPStatusRange = {
@@ -14,6 +16,16 @@ export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
     this._authorization = authorization;
+  }
+
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then(Api.toJSON);
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then(Api.toJSON);
   }
 
   getPoints() {

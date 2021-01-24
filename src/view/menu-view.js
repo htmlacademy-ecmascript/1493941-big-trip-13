@@ -1,4 +1,4 @@
-import AbstractView from "./abstract.js";
+import AbstractView from "./abstract-view.js";
 
 const createMenuElement = () => {
   return `<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -7,7 +7,7 @@ const createMenuElement = () => {
             </nav>`;
 };
 
-export default class Menu extends AbstractView {
+export default class MenuView extends AbstractView {
   getTemplate() {
     return createMenuElement();
   }

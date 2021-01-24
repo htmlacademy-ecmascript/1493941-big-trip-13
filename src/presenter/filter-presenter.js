@@ -1,8 +1,8 @@
-import FilterView from "../view/filter.js";
+import FilterView from "../view/filter-view.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {FilterType, UpdateType} from "../const.js";
 
-export default class Filter {
+export default class FilterPresenter {
   constructor(filterContainer, filterModel, pointsModel) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;

@@ -1,13 +1,12 @@
-import PointEditFormView from "../view/edit-form.js";
+import PointEditFormView from "../view/edit-form-view.js";
 import {UserAction, UpdateType} from "../const.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {generateId} from "../mocks/event.js";
+import {generateId} from "../utils/util.js";
 
-export default class NewPoint {
+export default class NewPointPresenter {
   constructor(tripPointsContainer, changeData) {
     this._tripPointsContainer = tripPointsContainer;
     this._changeData = changeData;
-    this._isNewPoint = true;
 
     this._tripPointEditComponent = null;
 
