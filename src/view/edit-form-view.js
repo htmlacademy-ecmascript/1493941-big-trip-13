@@ -49,7 +49,7 @@ const createPhotoListElement = (photo) => {
 
 const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, destinations, isNewPoint) => {
   const pointOffers = data.offers;
-  const offersByType = isNewPoint ? offers.find((item) => item.type === pointTypes[0]) : offers.find((item) => item.type === data.type).offers;
+  const offersByType = isNewPoint ? offers.find((item) => item.type === pointTypes[0]).offers : offers.find((item) => item.type === data.type).offers;
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -116,9 +116,8 @@ export default class EditFormView extends SmartView {
     super();
     this.isNewPoint = isNewPoint;
     this._data = this.isNewPoint ? EditFormView.adaptEventToData(BLANK_EVENT) : EditFormView.adaptEventToData(event);
-    this._pointOffer = event.offers;
     this._destinations = destinations;
-    this._pointTypes = /* this.isNewPoint ? offers[0].type : */offers.map((item) => item.type);
+    this._pointTypes = offers.map((item) => item.type);
     this._offers = offers;
     this.isSubmitDisabled = false;
     this._startDatepicker = null;
