@@ -23,7 +23,7 @@ const createOffersListElement = (offers, pointOffers) => {
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                       <div class="event__available-offers">
     ${offers.map((value) => `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" data-name="${value.title}" id="event-offer-${value.title}-1" type="checkbox" name="event-offer-${value.title}" ${pointOffers.findIndex((item) => item.title === value.title) >= 0 ? `checked` : ``}>
+        <input class="event__offer-checkbox  visually-hidden" data-name="${value.title}" data-price="${value.price}" id="event-offer-${value.title}-1" type="checkbox" name="event-offer-${value.title}" ${pointOffers.findIndex((item) => item.title === value.title) >= 0 ? `checked` : ``}>
             <label class="event__offer-label" for="event-offer-${value.title}-1">
                 <span class="event__offer-title">${value.title}</span>
                    &plus;&euro;&nbsp;
@@ -47,8 +47,9 @@ const createPhotoListElement = (photo) => {
                     </div>`;
 };
 
-const createEditPointElement = (data, isSubmitDisabled, offers, pointOffer, pointTypes, destinations, isNewPoint) => {
-
+const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, destinations, isNewPoint) => {
+  const pointOffers = data.offers;
+  const offersByType = isNewPoint ? offers.find((item) => item.type === pointTypes[0]) : offers.find((item) => item.type === data.type).offers;
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -75,7 +76,7 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointOffer, poin
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${data.destination}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                    ${destinations.map((name) => `<option value="${name}"></option>`).join(``)}
+                    ${destinations.map((item) => `<option value="${item.name}"></option>`).join(``)}
                     </datalist>
                   </div>
 
@@ -102,9 +103,9 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointOffer, poin
                   </button>
                 </header>
                 <section class="event__details">
-                ${offers.length > 0 ? createOffersListElement(offers, data.offers) : ``}
+                ${offersByType.length > 0 ? createOffersListElement(offersByType, pointOffers) : ``}
                 ${data.isDestinationDescription ? createDestinationListElement(data.description) : ``}
-                ${data.isPhoto ? createPhotoListElement(data.photo) : ``}
+                ${data.photo.length > 0 ? createPhotoListElement(data.photo) : ``}
                 </section>
               </form>
             </li>`;
@@ -118,7 +119,7 @@ export default class EditFormView extends SmartView {
     this._pointOffer = event.offers;
     this._destinations = destinations;
     this._pointTypes = /* this.isNewPoint ? offers[0].type : */offers.map((item) => item.type);
-    this._offers = this.isNewPoint ? offers.find((item) => item.type === this._pointTypes[0]) : offers.find((item) => item.type === event.type).offers;
+    this._offers = offers;
     this.isSubmitDisabled = false;
     this._startDatepicker = null;
     this._endDatepicker = null;
@@ -156,7 +157,7 @@ export default class EditFormView extends SmartView {
   }
 
   getTemplate() {
-    return createEditPointElement(this._data, this.isSubmitDisabled, this._offers, this._pointOffer, this._pointTypes, this._destinations, this.isNewPoint);
+    return createEditPointElement(this._data, this.isSubmitDisabled, this._offers, this._pointTypes, this._destinations, this.isNewPoint);
   }
 
   restoreHandlers() {
@@ -212,14 +213,13 @@ export default class EditFormView extends SmartView {
   _changeOffersHandler(evt) {
     evt.preventDefault();
     if (evt.target.checked) {
-      const newOffersOption = evt.target.dataset.name;
+      this._data.offers.push({title: evt.target.dataset.name, price: Number(evt.target.dataset.price)});
       this.updateData({
-        offers: this._data.offers.concat(newOffersOption),
+        offers: this._data.offers,
       });
     }
     if (!evt.target.checked) {
-      const indexOffersOption = this._data.offers.indexOf(evt.target.dataset.name);
-      this._data.offers.splice(indexOffersOption, 1);
+      this._data.offers = this._data.offers.filter((item) => item.title !== evt.target.dataset.name);
       this.updateData({
         offers: this._data.offers,
       });
@@ -228,15 +228,15 @@ export default class EditFormView extends SmartView {
 
   _changeDestinationHandler(evt) {
     evt.preventDefault();
-    if (this._destinations.includes(evt.target.value)) {
+    if (this._destinations.filter((item) => item.name === evt.target.value).length > 0) {
       const destination = this._destinations.filter((item) => item.name === evt.target.value)[0];
       this.isSubmitDisabled = false;
       this.updateData({
         destination: evt.target.value,
         description: destination.description,
-        photo: destination.photo,
+        photo: destination.pictures,
         isDestinationDescription: destination.description !== ``,
-        isDestinationPhoto: destination.photo !== ``,
+        isDestinationPhoto: destination.photo !== [],
       });
     } else {
       this.isSubmitDisabled = true;
@@ -252,6 +252,8 @@ export default class EditFormView extends SmartView {
   }
 
   _setInnerHandlers() {
+    const type = this.isNewPoint ? this._offers[0].type : this._data.type;
+    const offersByType = this._offers.find((item) => item.type === type).offers;
     this.getElement()
       .querySelector(`.event__type-list`)
       .addEventListener(`change`, this._changeTypeHandler);
@@ -261,7 +263,7 @@ export default class EditFormView extends SmartView {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`input`, this._priceInputHandler);
-    if (this._offers.length > 0) {
+    if (offersByType.length > 0) {
       this.getElement()
         .querySelector(`.event__available-offers`)
         .addEventListener(`change`, this._changeOffersHandler);
@@ -286,7 +288,6 @@ export default class EditFormView extends SmartView {
     });
   }
 
-
   _closeClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeClick();
@@ -310,7 +311,7 @@ export default class EditFormView extends SmartView {
   static adaptEventToData(event) {
     return Object.assign({}, event, {
       isDestinationDescription: event.description !== ``,
-      isPhoto: event.photo !== []
+      isPhoto: Boolean(event.photo.length > 0)
     });
   }
 

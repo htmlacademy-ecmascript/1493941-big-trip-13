@@ -46,11 +46,8 @@ export default class TripPresenter {
     this._filterModel.addObserver(this._handleModelEvent);
 
     this.points = this._getPoints();
-    this._tripInfoComponent = new TripInfoView(this.points);
-    this._costInfoComponent = new CostInfoView(this.points);
     this._menuComponent = new MenuView();
     this._tripListComponent = new TripListView();
-
     this._noPointsComponent = new NoPointsView();
 
     this._renderMenu();
@@ -142,8 +139,10 @@ export default class TripPresenter {
   }
 
   _renderTripInfo() {
+    this._tripInfoComponent = new TripInfoView(this._getPoints());
     render(this._tripInfoContainer, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
     const tripInfo = this._tripInfoContainer.querySelector(`.trip-info`);
+    this._costInfoComponent = new CostInfoView(this._getPoints());
     render(tripInfo, this._costInfoComponent.getElement(), RenderPosition.BEFOREEND);
   }
 
@@ -193,6 +192,7 @@ export default class TripPresenter {
         this._renderTrip();
         break;
       case UpdateType.MAJOR:
+        this._clearTripInfo();
         this._clearTripPointList(true);
         this._renderTrip();
         break;
@@ -200,21 +200,7 @@ export default class TripPresenter {
         this._isLoading = false;
         remove(this._loadingComponent);
         this._renderTrip();
-        break;/*
-      case UpdateType.OFFERS_INIT:
-        this._isOffersLoad = true;
-        if (this._isDestinationLoad) {
-          this._clearTripPointList(true);
-          this._renderTrip();
-        }
         break;
-      case UpdateType.DESTINATIONS_INIT:
-        this._isDestinationLoad = true;
-        if (this._isOffersLoad) {
-          this._clearTripPointList(true);
-          this._renderTrip();
-        }
-        break;*/
     }
   }
 
@@ -232,6 +218,11 @@ export default class TripPresenter {
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
     }
+  }
+
+  _clearTripInfo() {
+    remove(this._tripInfoComponent);
+    remove(this._costInfoComponent);
   }
 
   _renderTrip() {

@@ -4,9 +4,11 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {generateId} from "../utils/util.js";
 
 export default class NewPointPresenter {
-  constructor(tripPointsContainer, changeData) {
+  constructor(tripPointsContainer, handleViewAction, offers, destination) {
     this._tripPointsContainer = tripPointsContainer;
-    this._changeData = changeData;
+    this._changeData = handleViewAction;
+    this._offers = offers;
+    this._destinations = destination;
 
     this._tripPointEditComponent = null;
 
@@ -22,8 +24,7 @@ export default class NewPointPresenter {
       return;
     }
 
-    this._tripPointEditComponent = new PointEditFormView({}, true);
-
+    this._tripPointEditComponent = new PointEditFormView({}, true, this._offers, this._destinations);
     this._tripPointEditComponent.setSubmitHandler(this._handleSubmit);
     this._tripPointEditComponent.setCloseClickHandler(this._handleCloseClick);
     this._tripPointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
