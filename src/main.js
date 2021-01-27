@@ -30,27 +30,20 @@ addButton
     addButton.disabled = true;
   });
 
-api.getPoints()
-  .then((points) => {
-    console.log(`1`);
-    console.log(points);
+Promise.all([
+  api.getOffers(),
+  api.getDestinations(),
+  api.getPoints(),
+])
+  .then(([offers, destinations, points]) => {
+    offersModel.setOffers(offers);
+    destinationsModel.setDestinations(destinations);
     pointsModel.setPoints(UpdateType.INIT, points);
-    console.log(`setPoints:`);
-    console.log(pointsModel);
   })
-  .catch(() => {
-    console.log(`2`);
+  .catch((er) => {
+    console.log(er);
     pointsModel.setPoints(UpdateType.INIT, []);
-    console.log(pointsModel);
   });
-
-api.getOffers().then((offers) => {
-  offersModel.setOffers(offers);
-});
-
-api.getDestinations().then((destinations) => {
-  destinationsModel.setDestinations(destinations);
-});
 
 const tripPresenter = new TripPresenter(tripMain, tripControlsTitle, tripPointsContainer, pointsModel, offersModel, destinationsModel, filterModel, api);
 const filterPresenter = new FilterPresenter(tripControlsTitle, filterModel, pointsModel);

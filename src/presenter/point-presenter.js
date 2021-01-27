@@ -26,14 +26,16 @@ export default class PointPresenter {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(tripPoint) {
+  init(tripPoint, offers, destinations, isDataLoaded) {
     this._tripPoint = tripPoint;
+    this._offers = offers;
+    this._destinations = destinations;
 
     const prevTripPointComponent = this._tripPointComponent;
     const prevTripPointEditComponent = this._tripPointEditComponent;
 
-    this._tripPointComponent = new TripPointView(this._tripPoint);
-    this._tripPointEditComponent = new PointEditFormView(this._tripPoint, false);
+    this._tripPointComponent = new TripPointView(this._tripPoint, isDataLoaded);
+    this._tripPointEditComponent = new PointEditFormView(this._tripPoint, false, this._offers, this._destinations);
 
     this._tripPointComponent.setEditClickHandler(this._handleEditClick);
     this._tripPointEditComponent.setSubmitHandler(this._handleSubmit);

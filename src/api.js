@@ -20,12 +20,14 @@ export default class Api {
 
   getDestinations() {
     return this._load({url: `destinations`})
-      .then(Api.toJSON);
+      .then(Api.toJSON)
+      .then((destinations) => destinations.slice());
   }
 
   getOffers() {
     return this._load({url: `offers`})
-      .then(Api.toJSON);
+      .then(Api.toJSON)
+      .then((offers) => offers);
   }
 
   getPoints() {

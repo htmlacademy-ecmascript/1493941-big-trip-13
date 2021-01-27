@@ -18,14 +18,14 @@ const BLANK_EVENT = {
   isFavorite: false,
 };
 
-const createOffersListElement = (pointOffers, offers) => {
+const createOffersListElement = (offers, pointOffers) => {
   return `<section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                       <div class="event__available-offers">
-    ${Object.entries(pointOffers).map((value) => `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" data-name="${value.name}" id="event-offer-${value.name}-1" type="checkbox" name="event-offer-${value.name}" ${offers.findIndex((item) => item.name === value.name) >= 0 ? `checked` : ``}>
-            <label class="event__offer-label" for="event-offer-${value.name}-1">
-                <span class="event__offer-title">${value.name}</span>
+    ${offers.map((value) => `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" data-name="${value.title}" id="event-offer-${value.title}-1" type="checkbox" name="event-offer-${value.title}" ${pointOffers.findIndex((item) => item.title === value.title) >= 0 ? `checked` : ``}>
+            <label class="event__offer-label" for="event-offer-${value.title}-1">
+                <span class="event__offer-title">${value.title}</span>
                    &plus;&euro;&nbsp;
                 <span class="event__offer-price">${value.price}</span>
             </label>
@@ -102,7 +102,7 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointOffer, poin
                   </button>
                 </header>
                 <section class="event__details">
-                ${data.isOffersOptions ? createOffersListElement(offers[data.type], data.offers) : ``}
+                ${offers.length > 0 ? createOffersListElement(offers, data.offers) : ``}
                 ${data.isDestinationDescription ? createDestinationListElement(data.description) : ``}
                 ${data.isPhoto ? createPhotoListElement(data.photo) : ``}
                 </section>
@@ -115,10 +115,10 @@ export default class EditFormView extends SmartView {
     super();
     this.isNewPoint = isNewPoint;
     this._data = this.isNewPoint ? EditFormView.adaptEventToData(BLANK_EVENT) : EditFormView.adaptEventToData(event);
-    this._offers = offers;
-    this._pointOffer = offers.find((item) => item.type === this._data.type).offers;
+    this._pointOffer = event.offers;
     this._destinations = destinations;
-    this._pointTypes = offers.map((item) => item.type);
+    this._pointTypes = /* this.isNewPoint ? offers[0].type : */offers.map((item) => item.type);
+    this._offers = this.isNewPoint ? offers.find((item) => item.type === this._pointTypes[0]) : offers.find((item) => item.type === event.type).offers;
     this.isSubmitDisabled = false;
     this._startDatepicker = null;
     this._endDatepicker = null;
@@ -205,7 +205,6 @@ export default class EditFormView extends SmartView {
     evt.preventDefault();
     this.updateData({
       type: evt.target.value,
-      isOffersOptions: Boolean(this._offers[evt.target.value]),
       offers: [],
     });
   }
@@ -262,7 +261,7 @@ export default class EditFormView extends SmartView {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`input`, this._priceInputHandler);
-    if (this._data.isOffersOptions) {
+    if (this._offers.length > 0) {
       this.getElement()
         .querySelector(`.event__available-offers`)
         .addEventListener(`change`, this._changeOffersHandler);
@@ -311,8 +310,7 @@ export default class EditFormView extends SmartView {
   static adaptEventToData(event) {
     return Object.assign({}, event, {
       isDestinationDescription: event.description !== ``,
-      isPhoto: event.photo !== [],
-      isOffersOptions: Boolean(this._offers[event.type]),
+      isPhoto: event.photo !== []
     });
   }
 
@@ -321,7 +319,6 @@ export default class EditFormView extends SmartView {
 
     delete data.isDestinationDescription;
     delete data.isPhoto;
-    delete data.isOffersOptions;
 
     return data;
   }
