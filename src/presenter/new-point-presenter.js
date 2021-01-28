@@ -1,13 +1,14 @@
-import PointEditFormView from "../view/edit-form.js";
+import PointEditFormView from "../view/edit-form-view.js";
 import {UserAction, UpdateType} from "../const.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {generateId} from "../mocks/event.js";
+import {generateId} from "../utils/util.js";
 
-export default class NewPoint {
-  constructor(tripPointsContainer, changeData) {
+export default class NewPointPresenter {
+  constructor(tripPointsContainer, handleViewAction, offers, destination) {
     this._tripPointsContainer = tripPointsContainer;
-    this._changeData = changeData;
-    this._isNewPoint = true;
+    this._changeData = handleViewAction;
+    this._offers = offers;
+    this._destinations = destination;
 
     this._tripPointEditComponent = null;
 
@@ -23,8 +24,7 @@ export default class NewPoint {
       return;
     }
 
-    this._tripPointEditComponent = new PointEditFormView({}, true);
-
+    this._tripPointEditComponent = new PointEditFormView({}, true, this._offers, this._destinations);
     this._tripPointEditComponent.setSubmitHandler(this._handleSubmit);
     this._tripPointEditComponent.setCloseClickHandler(this._handleCloseClick);
     this._tripPointEditComponent.setDeleteClickHandler(this._handleDeleteClick);

@@ -10,4 +10,4 @@ env:
 extends: 'htmlacademy/es6'
 
 rules:
-  camelcase: ["error", {allow: ["time_24hr"]}]
+  camelcase: ["error", {allow: ["time_24hr", "base_price", "date_from", "date_to", "is_favorite"]}]

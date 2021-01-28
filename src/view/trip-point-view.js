@@ -1,11 +1,9 @@
 import {getDatesDuration} from "../utils/util.js";
-import {offerOptions} from "../mocks/event.js";
 import dayjs from "dayjs";
-import AbstractView from "./abstract.js";
+import AbstractView from "./abstract-view.js";
 
 const createTripPointElement = (event) => {
   const {type, destination, offers, dates, price, isFavorite} = event;
-  const eventOptions = offerOptions[type];
 
   return `<li class="trip-events__item">
   <div class="event">
@@ -27,9 +25,9 @@ const createTripPointElement = (event) => {
     </p>
     ${offers.length > 0 ? `<h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">` : ``}
-    ${offers.map((key) => `
-    <li class="event__offer"><span class="event__offer-title">${eventOptions[key].name}
-    </span>&plus;&euro;&nbsp;<span class="event__offer-price">${eventOptions[key].price}
+    ${offers.map((offer) => `
+    <li class="event__offer"><span class="event__offer-title">${offer.title}
+    </span>&plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}
     </span></li>`).join(``)}
     ${offers.length > 0 ? `</ul>` : ``}
     <button class="event__favorite-btn ${isFavorite ? `event__favorite-btn--active` : ``}" type="button">
@@ -45,17 +43,17 @@ const createTripPointElement = (event) => {
 </li>`;
 };
 
-export default class TripPoint extends AbstractView {
-  constructor(event) {
+export default class TripPointView extends AbstractView {
+  constructor(point) {
     super();
-    this._event = event;
+    this._point = point;
 
     this._editClickHandler = this._editClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createTripPointElement(this._event);
+    return createTripPointElement(this._point);
   }
 
   _editClickHandler(evt) {
