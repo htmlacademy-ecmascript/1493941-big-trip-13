@@ -44,16 +44,16 @@ const createTripPointElement = (event) => {
 };
 
 export default class TripPointView extends AbstractView {
-  constructor(event) {
+  constructor(point) {
     super();
-    this._event = event;
+    this._point = point;
 
     this._editClickHandler = this._editClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createTripPointElement(this._event);
+    return createTripPointElement(this._point);
   }
 
   _editClickHandler(evt) {

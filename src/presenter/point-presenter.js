@@ -9,10 +9,12 @@ const Mode = {
 };
 
 export default class PointPresenter {
-  constructor(tripPointsContainer, handleViewAction, handleModeChange) {
+  constructor(tripPointsContainer, offers, destinations, handleViewAction, handleModeChange) {
     this._tripPointsContainer = tripPointsContainer;
     this._changeData = handleViewAction;
     this._changeMode = handleModeChange;
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._tripPointComponent = null;
     this._tripPointEditComponent = null;
@@ -26,15 +28,13 @@ export default class PointPresenter {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(tripPoint, offers, destinations, isDataLoaded) {
+  init(tripPoint) {
     this._tripPoint = tripPoint;
-    this._offers = offers;
-    this._destinations = destinations;
 
     const prevTripPointComponent = this._tripPointComponent;
     const prevTripPointEditComponent = this._tripPointEditComponent;
 
-    this._tripPointComponent = new TripPointView(this._tripPoint, isDataLoaded);
+    this._tripPointComponent = new TripPointView(this._tripPoint);
     this._tripPointEditComponent = new PointEditFormView(this._tripPoint, false, this._offers, this._destinations);
 
     this._tripPointComponent.setEditClickHandler(this._handleEditClick);
