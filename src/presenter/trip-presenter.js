@@ -188,6 +188,7 @@ export default class TripPresenter {
         this._tripPointsPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
+        this._clearTripInfo();
         this._clearTripPointList(false);
         this._renderTrip();
         break;

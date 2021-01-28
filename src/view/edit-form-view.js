@@ -5,7 +5,7 @@ import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
-  type: ``,
+  type: `taxi`,
   destination: ``,
   offers: [],
   description: ``,
@@ -64,7 +64,7 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, dest
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
                         ${pointTypes.map((pointType) => `<div class="event__type-item">
-                          <input id="event-type-${pointType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === data.type ? `checked` : ``}>
+                          <input id="event-type-${pointType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${(isNewPoint ? pointTypes[0] : pointType === data.type) ? `checked` : ``}>
                           <label class="event__type-label  event__type-label--${pointType.toLowerCase()}" for="event-type-${pointType.toLowerCase()}-1">${pointType}</label>
                         </div>`).join(``)}
                       </fieldset>
@@ -309,8 +309,7 @@ export default class EditFormView extends SmartView {
 
   static adaptEventToData(event) {
     return Object.assign({}, event, {
-      isDestinationDescription: event.description !== ``,
-      isPhoto: Boolean(event.photo.length > 0)
+      isDestinationDescription: event.description !== ``
     });
   }
 
@@ -318,7 +317,6 @@ export default class EditFormView extends SmartView {
     data = Object.assign({}, data);
 
     delete data.isDestinationDescription;
-    delete data.isPhoto;
 
     return data;
   }
