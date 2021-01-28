@@ -1,7 +1,6 @@
 import PointEditFormView from "../view/edit-form-view.js";
 import {UserAction, UpdateType} from "../const.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {generateId} from "../utils/util.js";
 
 export default class NewPointPresenter {
   constructor(tripPointsContainer, handleViewAction, offers, destination) {
@@ -49,9 +48,28 @@ export default class NewPointPresenter {
     document.querySelector(`.trip-main__event-add-btn`).disabled = false;
   }
 
+  setSaving() {
+    this._tripPointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._tripPointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this._tripPointEditComponent.shake(resetFormState);
+  }
+
+
   _handleSubmit(point) {
-    this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, Object.assign({id: generateId()}, point));
-    this.destroy();
+    this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, point);
   }
 
   _handleDeleteClick() {

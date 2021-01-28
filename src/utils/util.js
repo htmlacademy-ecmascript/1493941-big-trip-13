@@ -30,12 +30,9 @@ const sortByDuration = (A, B) => B.dates.duration - A.dates.duration;
 
 const sortByPrice = (A, B) => B.price - A.price;
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
-
 export {
   getDatesDuration,
   sortByDate,
   sortByPrice,
-  sortByDuration,
-  generateId
+  sortByDuration
 };

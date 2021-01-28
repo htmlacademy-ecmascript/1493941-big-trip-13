@@ -6,7 +6,7 @@ import {filter} from "../utils/filter.js";
 import TripListView from "../view/trip-list-view.js";
 import SorterView from "../view/sorter-view.js";
 import NoPointsView from "../view/no-points-view.js";
-import PointPresenter from "./point-presenter.js";
+import PointPresenter, {State as PointPresenterViewState} from "./point-presenter.js";
 import NewPointPresenter from "./new-point-presenter.js";
 import LoadingView from "../view/load-view.js";
 import {sortByDate, sortByDuration, sortByPrice} from "../utils/util.js";
@@ -169,15 +169,35 @@ export default class TripPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this._api.updatePoint(update).then((response) => {
-          this._pointsModel.updatePoint(updateType, response);
-        });
+        this._tripPointsPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
+        this._api.updatePoint(update)
+          .then((response) => {
+            this._pointsModel.updatePoint(updateType, response);
+          })
+           .catch(() => {
+             this._tripPointsPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+           });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
+        this._newPointPresenter.setSaving();
+        this._api.addPoint(update)
+          .then((response) => {
+            this._pointsModel.addPoint(updateType, response);
+          })
+          .catch(() => {
+            this._newPointPresenter.setAborting();
+          });
+        console.log(this._api.addPoint(update));
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        this._tripPointsPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
+        this._api.deletePoint(update)
+          .then(() => {
+            this._pointsModel.deletePoint(updateType, update);
+          })
+          .catch(() => {
+            this._tripPointsPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
     }
   }

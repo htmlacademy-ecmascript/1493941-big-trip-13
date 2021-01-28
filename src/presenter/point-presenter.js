@@ -8,6 +8,13 @@ const Mode = {
   EDITING: `EDITING`,
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
+
 export default class PointPresenter {
   constructor(tripPointsContainer, offers, destinations, handleViewAction, handleModeChange) {
     this._tripPointsContainer = tripPointsContainer;
@@ -51,7 +58,8 @@ export default class PointPresenter {
       replace(this._tripPointComponent, prevTripPointComponent);
     }
     if (this._mode === Mode.EDITING) {
-      replace(this._tripPointEditComponent, prevTripPointEditComponent);
+      replace(this._tripPointComponent, prevTripPointEditComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevTripPointComponent);
@@ -110,5 +118,22 @@ export default class PointPresenter {
 
   _handleDeleteClick(point) {
     this._changeData(UserAction.DELETE_POINT, UpdateType.MINOR, point);
+  }
+
+  setViewState(state) {
+    switch (state) {
+      case State.SAVING:
+        this._tripPointEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._tripPointEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+    }
   }
 }
