@@ -1,4 +1,6 @@
 import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+dayjs.extend(duration);
 
 const addLeadingZero = (val) => {
   return val.toString().padStart(2, `0`);
@@ -30,9 +32,15 @@ const sortByDuration = (A, B) => B.dates.duration - A.dates.duration;
 
 const sortByPrice = (A, B) => B.price - A.price;
 
+const getDateInDays = (dateDiff) => {
+  const timeDuration = dayjs.duration(dateDiff);
+  const days = timeDuration.days();
+  return `${(days > 0) ? addLeadingZero(days) + `D ` : `00D`}`;
+};
 export {
   getDatesDuration,
   sortByDate,
   sortByPrice,
-  sortByDuration
+  sortByDuration,
+  getDateInDays
 };

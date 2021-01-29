@@ -10,6 +10,7 @@ export default class NewPointPresenter {
     this._destinations = destination;
 
     this._tripPointEditComponent = null;
+    this._destroyCallback = null;
 
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleCloseClick = this._handleCloseClick.bind(this);
@@ -18,7 +19,9 @@ export default class NewPointPresenter {
     this._renderForm = this._renderForm.bind(this);
   }
 
-  init() {
+  init(callback) {
+    this._destroyCallback = callback;
+
     if (this._tripPointEditComponent !== null) {
       return;
     }
@@ -39,6 +42,10 @@ export default class NewPointPresenter {
   destroy() {
     if (this._tripPointEditComponent === null) {
       return;
+    }
+
+    if (this._destroyCallback !== null) {
+      this._destroyCallback();
     }
 
     remove(this._tripPointEditComponent);

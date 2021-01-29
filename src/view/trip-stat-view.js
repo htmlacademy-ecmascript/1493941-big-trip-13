@@ -1,4 +1,239 @@
-import AbstractView from "./abstract-view.js";
+import {getDateInDays} from "../utils/util.js";
+import Chart from "chart.js";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import SmartView from "../view/smart-view.js";
+
+const renderMoneyChart = (moneyCtx, labels, points) => {
+  const costsByLabel = [];
+  labels.forEach((label) => {
+    let cost = 0;
+    points.forEach((point) => {
+      cost += (point.type.toLowerCase() === label.toLowerCase()) ? point.price : 0;
+    });
+    costsByLabel.push(cost);
+  });
+  return new Chart(moneyCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels,
+      datasets: [{
+        data: costsByLabel,
+        backgroundColor: `#ffffff`,
+        hoverBackgroundColor: `#ffffff`,
+        anchor: `start`
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 13
+          },
+          color: `#000000`,
+          anchor: `end`,
+          align: `start`,
+          formatter: (val) => `€ ${val}`
+        }
+      },
+      title: {
+        display: true,
+        text: `MONEY`,
+        fontColor: `#000000`,
+        fontSize: 23,
+        position: `left`
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: `#000000`,
+            padding: 5,
+            fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          barThickness: 44,
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          minBarLength: 50
+        }],
+      },
+      legend: {
+        display: false
+      },
+      tooltips: {
+        enabled: false,
+      }
+    }
+  });
+
+};
+
+const renderTypeChart = (typeCtx, labels, points) => {
+  const labelCount = [];
+  labels.forEach((label) => {
+    let count = 0;
+    points.forEach((point) => {
+      count += (point.type.toLowerCase() === label.toLowerCase()) ? 1 : 0;
+    });
+    labelCount.push(count);
+  });
+
+  return new Chart(typeCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels,
+      datasets: [{
+        data: labelCount,
+        backgroundColor: `#ffffff`,
+        hoverBackgroundColor: `#ffffff`,
+        anchor: `start`
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 13
+          },
+          color: `#000000`,
+          anchor: `end`,
+          align: `start`,
+          formatter: (val) => `${val}x`
+        }
+      },
+      title: {
+        display: true,
+        text: `TYPE`,
+        fontColor: `#000000`,
+        fontSize: 23,
+        position: `left`
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: `#000000`,
+            padding: 5,
+            fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          barThickness: 44,
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          minBarLength: 50
+        }],
+      },
+      legend: {
+        display: false
+      },
+      tooltips: {
+        enabled: false,
+      }
+    }
+  });
+};
+
+const renderTimeChart = (timeCtx, labels, points) => {
+  const timeAmount = [];
+  labels.forEach((label) => {
+    let startTime = 0;
+    let endTime = 0;
+
+    points.forEach((point) => {
+      if (point.type.toLowerCase() === label.toLowerCase()) {
+        startTime += point.dates.start;
+        endTime += point.dates.end;
+      }
+    });
+    timeAmount.push(endTime - startTime);
+  });
+  return new Chart(timeCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels,
+      datasets: [{
+        data: timeAmount,
+        backgroundColor: `#ffffff`,
+        hoverBackgroundColor: `#ffffff`,
+        anchor: `start`
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 13
+          },
+          color: `#000000`,
+          anchor: `end`,
+          align: `start`,
+          formatter: (val) => `${getDateInDays(val)}`
+        }
+      },
+      title: {
+        display: true,
+        text: `TIME-SPEND`,
+        fontColor: `#000000`,
+        fontSize: 23,
+        position: `left`
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: `#000000`,
+            padding: 5,
+            fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          barThickness: 44,
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          minBarLength: 50
+        }],
+      },
+      legend: {
+        display: false
+      },
+      tooltips: {
+        enabled: false,
+      }
+    }
+  });
+};
 
 const createStatisticTemplate = () => {
   return `<section class="statistics">
@@ -18,7 +253,7 @@ const createStatisticTemplate = () => {
 </section>`;
 };
 
-export default class StatsView extends AbstractView {
+export default class StatsView extends SmartView {
   constructor(points) {
     super();
 
@@ -33,6 +268,7 @@ export default class StatsView extends AbstractView {
   getTemplate() {
     return createStatisticTemplate();
   }
+
   removeElement() {
     super.removeElement();
 
@@ -44,7 +280,7 @@ export default class StatsView extends AbstractView {
   }
 
   _getUniquePoints() {
-    const labelsList = this._points.reduce((acc, value) => [...acc, value.pointType.toUpperCase()], []);
+    const labelsList = this._points.reduce((acc, item) => [...acc, item.type.toUpperCase()], []);
     this._labels = [...new Set(labelsList)].sort();
   }
 

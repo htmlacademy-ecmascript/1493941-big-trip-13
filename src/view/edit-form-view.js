@@ -4,15 +4,15 @@ import flatpickr from "flatpickr";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-const BLANK_EVENT = {
+const BLANK_POINT = {
   type: `taxi`,
   destination: ``,
   offers: [],
   description: ``,
   photo: [],
   dates: {
-    start: dayjs().format(`DD/MM/YY HH:mm`),
-    end: dayjs().format(`DD/MM/YY HH:mm`),
+    start: new Date(),
+    end: new Date(),
   },
   price: 0,
   isFavorite: false,
@@ -67,7 +67,7 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, dest
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
                         ${pointTypes.map((pointType) => `<div class="event__type-item">
-                          <input id="event-type-${pointType.toLowerCase()}-1" class="event__type-input  visually-hidden" ${isDisabled ? `disabled` : ``} type="radio" name="event-type" value="${pointType}" ${(isNewPoint ? pointTypes[0] : pointType === data.type) ? `checked` : ``}>
+                          <input id="event-type-${pointType.toLowerCase()}-1" class="event__type-input  visually-hidden" ${isDisabled ? `disabled` : ``} type="radio" name="event-type" value="${pointType}" ${pointType === data.type ? `checked` : ``}>
                           <label class="event__type-label  event__type-label--${pointType.toLowerCase()}" for="event-type-${pointType.toLowerCase()}-1">${pointType}</label>
                         </div>`).join(``)}
                       </fieldset>
@@ -100,7 +100,7 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, dest
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? `disabled` : ``}>${data.isSaving ? `Saving...` : `Save`}</button>
-                  <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${data.isDeleting ? `deleting...` : `delete`}</button>
+                  <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${data.isDeleting ? `Deleting...` : `Delete`}</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>
@@ -118,7 +118,7 @@ export default class EditFormView extends SmartView {
   constructor(event, isNewPoint, offers, destinations) {
     super();
     this.isNewPoint = isNewPoint;
-    this._data = this.isNewPoint ? EditFormView.adaptEventToData(BLANK_EVENT) : EditFormView.adaptEventToData(event);
+    this._data = this.isNewPoint ? EditFormView.adaptEventToData(BLANK_POINT) : EditFormView.adaptEventToData(event);
     this._destinations = destinations;
     this._pointTypes = offers.map((item) => item.type);
     this._offers = offers;

@@ -20,11 +20,12 @@ export const UpdateType = {
 export const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
-  PAST: `past`
+  PAST: `past`,
+  DISABLED: `disabled`
 };
 
 export const MenuItem = {
   ADD_NEW_POINT: `ADD_NEW_TASK`,
-  TABLE: `TABLE`,
-  STATS: `STATS`
+  TABLE: `Table`,
+  STATS: `Stats`
 };

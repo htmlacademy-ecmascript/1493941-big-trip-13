@@ -67,9 +67,9 @@ export default class PointsModel extends Observer {
           description: descriptionPoint,
           photo: photos,
           dates: {
-            start: dateFrom,
-            end: dateTo,
-            duration: dayjs(dateFrom).diff(dayjs(dateTo)),
+            start: new Date(dateFrom).valueOf(),
+            end: new Date(dateTo).valueOf(),
+            duration: dayjs(new Date(dateFrom).valueOf()).diff(dayjs(new Date(dateTo).valueOf())),
           },
           price: Number(basePrice),
           isFavorite: isFavoritePoint,
