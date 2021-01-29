@@ -51,6 +51,7 @@ const handleSiteMenuClick = (menuItem) => {
         .classList.remove(`trip-tabs__btn--active`);
       menuComponent.getElement().querySelector(`[data-name=${MenuItem.STATS}]`)
         .classList.remove(`trip-tabs__btn--active`);
+      menuComponent.getElement().querySelector(`[data-name=${MenuItem.ADD_NEW_POINT}]`).disabled = true;
       break;
     case MenuItem.TABLE:
       tripPresenter.destroy();
@@ -93,6 +94,7 @@ Promise.all([
   .catch((er) => {
     console.log(er);
     pointsModel.setPoints(UpdateType.INIT, []);
+    menuComponent.setMenuClickHandler(handleSiteMenuClick);
   });
 
 tripPresenter.init();

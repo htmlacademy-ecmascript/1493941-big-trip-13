@@ -52,51 +52,51 @@ const createPhotoListElement = (photo) => {
 
 const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, destinations, isNewPoint, isDisabled) => {
   const pointOffers = data.offers;
-  const offersByType = isNewPoint ? offers.find((item) => item.type === pointTypes[0]).offers : offers.find((item) => item.type === data.type).offers;
+  const offersByType = offers.find((item) => item.type === data.type).offers;
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
                   <div class="event__type-wrapper">
-                    <label class="event__type  event__type-btn" for="event-type-toggle-1">
+                    <label class="event__type  event__type-btn" for="event-type-toggle-${data.id}">
                       <span class="visually-hidden">Choose event type</span>
                       <img class="event__type-icon" width="17" height="17" src="img/icons/${isNewPoint ? pointTypes[0] : data.type.toLowerCase()}.png" alt="Event type icon">
                     </label>
-                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" ${isDisabled ? `disabled` : ``} type="checkbox">
+                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${data.id}" ${isDisabled ? `disabled` : ``} type="checkbox">
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
                         ${pointTypes.map((pointType) => `<div class="event__type-item">
-                          <input id="event-type-${pointType.toLowerCase()}-1" class="event__type-input  visually-hidden" ${isDisabled ? `disabled` : ``} type="radio" name="event-type" value="${pointType}" ${pointType === data.type ? `checked` : ``}>
-                          <label class="event__type-label  event__type-label--${pointType.toLowerCase()}" for="event-type-${pointType.toLowerCase()}-1">${pointType}</label>
+                          <input id="event-type-${pointType.toLowerCase()}-${data.id}" class="event__type-input  visually-hidden" ${isDisabled ? `disabled` : ``} type="radio" name="event-type" value="${pointType}" ${pointType === data.type ? `checked` : ``}>
+                          <label class="event__type-label  event__type-label--${pointType.toLowerCase()}" for="event-type-${pointType.toLowerCase()}-${data.id}">${pointType}</label>
                         </div>`).join(``)}
                       </fieldset>
                     </div>
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
-                    <label class="event__label  event__type-output" for="event-destination-1">${data.type}
+                    <label class="event__label  event__type-output" for="event-destination-${data.id}">${data.type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" ${isDisabled ? `disabled` : ``} name="event-destination" value="${data.destination}" list="destination-list-1">
-                    <datalist id="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-${data.id}" type="text" ${isDisabled ? `disabled` : ``} name="event-destination" value="${data.destination}" list="destination-list-1">
+                    <datalist id="destination-list-${data.id}">
                     ${destinations.map((item) => `<option value="${item.name}"></option>`).join(``)}
                     </datalist>
                   </div>
 
                   <div class="event__field-group  event__field-group--time">
-                    <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" ${isDisabled ? `disabled` : ``} value="${dayjs(data.dates.start).format(`DD/MM/YY HH:mm`)}">
+                    <label class="visually-hidden" for="event-start-time-${data.id}">From</label>
+                    <input class="event__input  event__input--time" id="event-start-time-${data.id}" type="text" name="event-start-time" ${isDisabled ? `disabled` : ``} value="${dayjs(data.dates.start).format(`DD/MM/YY HH:mm`)}">
                     &mdash;
-                    <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" ${isDisabled ? `disabled` : ``} value="${dayjs(data.dates.end).format(`DD/MM/YY HH:mm`)}">
+                    <label class="visually-hidden" for="event-end-time-${data.id}">To</label>
+                    <input class="event__input  event__input--time" id="event-end-time-${data.id}" type="text" name="event-end-time" ${isDisabled ? `disabled` : ``} value="${dayjs(data.dates.end).format(`DD/MM/YY HH:mm`)}">
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
-                    <label class="event__label" for="event-price-1">
+                    <label class="event__label" for="event-price-${data.id}">
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" ${isDisabled ? `disabled` : ``} value="${data.price}">
+                    <input class="event__input  event__input--price" id="event-price-${data.id}" type="number" name="event-price" ${isDisabled ? `disabled` : ``} value="${data.price}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? `disabled` : ``}>${data.isSaving ? `Saving...` : `Save`}</button>
@@ -115,10 +115,10 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, dest
 };
 
 export default class EditFormView extends SmartView {
-  constructor(event, isNewPoint, offers, destinations) {
+  constructor(point, isNewPoint, offers, destinations) {
     super();
     this.isNewPoint = isNewPoint;
-    this._data = this.isNewPoint ? EditFormView.adaptEventToData(BLANK_POINT) : EditFormView.adaptEventToData(event);
+    this._data = this.isNewPoint ? EditFormView.adaptEventToData(BLANK_POINT) : EditFormView.adaptEventToData(point);
     this._destinations = destinations;
     this._pointTypes = offers.map((item) => item.type);
     this._offers = offers;
@@ -181,7 +181,7 @@ export default class EditFormView extends SmartView {
     }
 
     this._startDatepicker = flatpickr(
-        this.getElement().querySelector(`#event-start-time-1`),
+        this.getElement().querySelector(`#event-start-time-${this._data.id}`),
         {
           dateFormat: `d/m/Y H:i`,
           enableTime: true,
@@ -192,7 +192,7 @@ export default class EditFormView extends SmartView {
     );
 
     this._endDatepicker = flatpickr(
-        this.getElement().querySelector(`#event-end-time-1`),
+        this.getElement().querySelector(`#event-end-time-${this._data.id}`),
         {
           dateFormat: `d/m/Y H:i`,
           enableTime: true,

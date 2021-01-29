@@ -48,18 +48,6 @@ export default class TripPresenter {
     this._renderTrip();
   }
 
-  createPoint(callback) {
-    this._currentSortType = SortType.DAY;
-    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._newPointPresenter = new NewPointPresenter(
-        this._tripListComponent,
-        this._handleViewAction,
-        this._offersModel.getOffers(),
-        this._destinationsModel.getDestinations()
-    );
-    this._newPointPresenter.init(callback);
-  }
-
   _getOffers() {
     return this._offersModel.getOffers();
   }
@@ -157,6 +145,18 @@ export default class TripPresenter {
     points.forEach((point) => this._renderPoint(point, offers, destinations));
   }
 
+  createPoint(callback) {
+    this._currentSortType = SortType.DAY;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._newPointPresenter = new NewPointPresenter(
+        this._tripListComponent,
+        this._handleViewAction,
+        this._offersModel.getOffers(),
+        this._destinationsModel.getDestinations()
+    );
+    this._newPointPresenter.init(callback);
+  }
+
   _handleViewAction(actionType, updateType, update) {
 
     switch (actionType) {
@@ -216,7 +216,8 @@ export default class TripPresenter {
     }
   }
 
-  _clearTripPointList(resetSortType = false) {
+  _clearTripPointList(resetSortType = false) { /*
+    this._newPointPresenter.destroy();*/
     Object
       .values(this._tripPointsPresenter)
       .forEach((presenter) => presenter.destroy());
@@ -232,11 +233,6 @@ export default class TripPresenter {
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
     }
-  }
-
-  _clearTripInfo() {
-    remove(this._tripInfoComponent);
-    remove(this._costInfoComponent);
   }
 
   _renderTrip() {
