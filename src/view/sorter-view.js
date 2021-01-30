@@ -42,7 +42,7 @@ export default class Sort extends AbstractView {
   }
 
   _sortTypeChangeHandler(evt) {
-    if (evt.target.className !== `trip-sort__btn`) {
+    if (!evt.target.dataset.sortType) {
       return;
     }
 

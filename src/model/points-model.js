@@ -67,15 +67,13 @@ export default class PointsModel extends Observer {
           description: descriptionPoint,
           photo: photos,
           dates: {
-            start: dateFrom,
-            end: dateTo,
-            duration: dayjs(dateFrom).diff(dayjs(dateTo)),
+            start: new Date(dateFrom).valueOf(),
+            end: new Date(dateTo).valueOf(),
+            duration: dayjs(new Date(dateFrom).valueOf()).diff(dayjs(new Date(dateTo).valueOf())),
           },
-          price: basePrice,
+          price: Number(basePrice),
           isFavorite: isFavoritePoint,
-          isDestinationDescription: point.description !== ``,
-          isPhoto: photos !== [],
-          isOffersOptions: Boolean(point.type),
+          isDestinationDescription: point.description !== ``
         }
     );
   }
@@ -85,12 +83,12 @@ export default class PointsModel extends Observer {
         {},
         {
           base_price: Number(point.price),
-          date_from: point.dates.start,
-          date_to: point.dates.end,
+          date_from: new Date(point.dates.start).toISOString(),
+          date_to: new Date(point.dates.end).toISOString(),
           destination: {
             name: point.destination,
             description: point.description,
-            pictures: point.photos ? point.photos : []
+            pictures: point.photo ? point.photo : []
           },
           id: point.id,
           is_favorite: point.isFavorite,

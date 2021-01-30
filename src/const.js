@@ -1,7 +1,7 @@
 export const SortType = {
-  DAY: `day`,
-  DURATION: `duration`,
-  PRICE: `price`
+  DAY: `sort-day`,
+  DURATION: `sort-time`,
+  PRICE: `sort-price`
 };
 
 export const UserAction = {
@@ -20,5 +20,12 @@ export const UpdateType = {
 export const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
-  PAST: `past`
+  PAST: `past`,
+  DISABLED: `disabled`
+};
+
+export const MenuItem = {
+  ADD_NEW_POINT: `ADD_NEW_TASK`,
+  TABLE: `Table`,
+  STATS: `Stats`
 };

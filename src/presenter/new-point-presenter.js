@@ -1,7 +1,6 @@
 import PointEditFormView from "../view/edit-form-view.js";
-import {UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType, MenuItem} from "../const.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {generateId} from "../utils/util.js";
 
 export default class NewPointPresenter {
   constructor(tripPointsContainer, handleViewAction, offers, destination) {
@@ -11,6 +10,7 @@ export default class NewPointPresenter {
     this._destinations = destination;
 
     this._tripPointEditComponent = null;
+    this._destroyCallback = null;
 
     this._handleSubmit = this._handleSubmit.bind(this);
     this._handleCloseClick = this._handleCloseClick.bind(this);
@@ -19,7 +19,9 @@ export default class NewPointPresenter {
     this._renderForm = this._renderForm.bind(this);
   }
 
-  init() {
+  init(callback) {
+    this._destroyCallback = callback;
+
     if (this._tripPointEditComponent !== null) {
       return;
     }
@@ -30,6 +32,12 @@ export default class NewPointPresenter {
     this._tripPointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     this._renderForm();
+
+    document.querySelector(`[data-name=${MenuItem.TABLE}]`)
+      .classList.remove(`trip-tabs__btn--active`);
+    document.querySelector(`[data-name=${MenuItem.STATS}]`)
+      .classList.remove(`trip-tabs__btn--active`);
+    document.querySelector(`[data-name=${MenuItem.ADD_NEW_POINT}]`).disabled = true;
   }
 
   _renderForm() {
@@ -42,16 +50,41 @@ export default class NewPointPresenter {
       return;
     }
 
+    if (this._destroyCallback !== null) {
+      this._destroyCallback();
+    }
+
     remove(this._tripPointEditComponent);
     this._tripPointEditComponent = null;
 
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
-    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    document.querySelector(`[data-name=${MenuItem.TABLE}]`)
+      .classList.add(`trip-tabs__btn--active`);
+    document.querySelector(`[data-name=${MenuItem.ADD_NEW_POINT}]`).disabled = false;
   }
 
+  setSaving() {
+    this._tripPointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._tripPointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this._tripPointEditComponent.shake(resetFormState);
+  }
+
+
   _handleSubmit(point) {
-    this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, Object.assign({id: generateId()}, point));
-    this.destroy();
+    this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, point);
   }
 
   _handleDeleteClick() {

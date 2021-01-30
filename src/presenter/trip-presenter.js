@@ -1,25 +1,23 @@
 import TripInfoView from "../view/trip-info-view.js";
 import CostInfoView from "../view/cost-view.js";
-import MenuView from "../view/menu-view.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {filter} from "../utils/filter.js";
 import TripListView from "../view/trip-list-view.js";
 import SorterView from "../view/sorter-view.js";
 import NoPointsView from "../view/no-points-view.js";
-import PointPresenter from "./point-presenter.js";
+import PointPresenter, {State as PointPresenterViewState} from "./point-presenter.js";
 import NewPointPresenter from "./new-point-presenter.js";
 import LoadingView from "../view/load-view.js";
 import {sortByDate, sortByDuration, sortByPrice} from "../utils/util.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const";
 
 export default class TripPresenter {
-  constructor(tripInfoContainer, tripMenuContainer, tripPointsContainer, pointsModel, offersModel, destinationsModel, filterModel, api) {
+  constructor(tripInfoContainer, tripPointsContainer, pointsModel, offersModel, destinationsModel, filterModel, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._offersModel = offersModel;
     this._destinationsModel = destinationsModel;
     this._tripInfoContainer = tripInfoContainer;
-    this._tripMenuContainer = tripMenuContainer;
     this._tripPointsContainer = tripPointsContainer;
     this._tripPointsPresenter = {};
     this._currentSortType = SortType.DAY;
@@ -31,7 +29,7 @@ export default class TripPresenter {
     this._noPointsComponent = null;
     this._tripInfoComponent = null;
     this._costInfoComponent = null;
-    this._menuComponent = null;
+    this._newPointPresenter = null;
 
     this._loadingComponent = new LoadingView();
 
@@ -45,25 +43,10 @@ export default class TripPresenter {
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
 
-    this.points = this._getPoints();
-    this._menuComponent = new MenuView();
     this._tripListComponent = new TripListView();
     this._noPointsComponent = new NoPointsView();
 
-    this._renderMenu();
     this._renderTrip();
-  }
-
-  createPoint() {
-    this._currentSortType = SortType.DAY;
-    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._newPointPresenter = new NewPointPresenter(
-        this._tripListComponent,
-        this._handleViewAction,
-        this._offersModel.getOffers(),
-        this._destinationsModel.getDestinations()
-    );
-    this._newPointPresenter.init();
   }
 
   _getOffers() {
@@ -92,10 +75,9 @@ export default class TripPresenter {
 
   destroy() {
     this._clearTripPointList(true);
-    remove(this._sortComponent);
-    remove(this._tripListComponent);
 
     this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   _handleSortTypeChange(sortType) {
@@ -109,6 +91,9 @@ export default class TripPresenter {
   }
 
   _handleModeChange() {
+    if (this._newPointPresenter !== null) {
+      this._newPointPresenter.destroy();
+    }
     Object
       .values(this._tripPointsPresenter)
       .forEach((presenter) => presenter.resetView());
@@ -146,14 +131,13 @@ export default class TripPresenter {
     render(tripInfo, this._costInfoComponent.getElement(), RenderPosition.BEFOREEND);
   }
 
-  _renderMenu() {
-    render(this._tripMenuContainer, this._menuComponent, RenderPosition.BEFOREBEGIN);
+  renderTripInfo() {
+    this._renderTripInfo();
   }
 
   _renderLoading() {
     render(this._tripPointsContainer, this._loadingComponent, RenderPosition.AFTERBEGIN);
   }
-
 
   _renderPoint(point, offers, destinations) {
     const pointPresenter = new PointPresenter(this._tripListComponent, offers, destinations, this._handleViewAction, this._handleModeChange);
@@ -165,19 +149,50 @@ export default class TripPresenter {
     points.forEach((point) => this._renderPoint(point, offers, destinations));
   }
 
+  createPoint(callback) {
+    this._currentSortType = SortType.DAY;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._newPointPresenter = new NewPointPresenter(
+        this._tripListComponent,
+        this._handleViewAction,
+        this._offersModel.getOffers(),
+        this._destinationsModel.getDestinations()
+    );
+    this._newPointPresenter.init(callback);
+  }
+
   _handleViewAction(actionType, updateType, update) {
 
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this._api.updatePoint(update).then((response) => {
-          this._pointsModel.updatePoint(updateType, response);
-        });
+        this._tripPointsPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
+        this._api.updatePoint(update)
+          .then((response) => {
+            this._pointsModel.updatePoint(updateType, response);
+          })
+           .catch(() => {
+             this._tripPointsPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+           });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
+        this._newPointPresenter.setSaving();
+        this._api.addPoint(update)
+          .then((response) => {
+            this._pointsModel.addPoint(updateType, response);
+          })
+          .catch(() => {
+            this._newPointPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        this._tripPointsPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
+        this._api.deletePoint(update)
+          .then(() => {
+            this._pointsModel.deletePoint(updateType, update);
+          })
+          .catch(() => {
+            this._tripPointsPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
     }
   }
@@ -185,14 +200,13 @@ export default class TripPresenter {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._tripPointsPresenter[data.id].init(data);
+        this._tripPointsPresenter[data.id].init(data, this._getOffers(), this._getDestinations());
         break;
       case UpdateType.MINOR:
         this._clearTripPointList(false);
         this._renderTrip();
         break;
       case UpdateType.MAJOR:
-        this._clearTripInfo();
         this._clearTripPointList(true);
         this._renderTrip();
         break;
@@ -216,13 +230,10 @@ export default class TripPresenter {
     remove(this._noPointsComponent);
 
     if (resetSortType) {
+      remove(this._costInfoComponent);
+      remove(this._tripInfoComponent);
       this._currentSortType = SortType.DAY;
     }
-  }
-
-  _clearTripInfo() {
-    remove(this._tripInfoComponent);
-    remove(this._costInfoComponent);
   }
 
   _renderTrip() {

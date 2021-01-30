@@ -9,8 +9,8 @@ const createCostInfoElement = (points) => {
 const getTripCost = (points) => {
   let cost = 0;
   for (const item of points) {
-    const offerPrice = (item.offers.length > 0) ? item.offers.map((offer) => offer.price).reduce((a, b) => a + b) : 0;
-    cost += item.price + offerPrice;
+    const offerPrice = (item.offers.length > 0) ? item.offers.map((offer) => Number(offer.price)).reduce((a, b) => a + b) : 0;
+    cost += Number(item.price) + offerPrice;
   }
 
   return cost;

@@ -14,14 +14,20 @@ const createTripInfoElement = (tripDestination, tripDuration) => {
 export default class TripInfoView extends AbstractView {
   constructor(points) {
     super();
-    if (points.length > 3) {
-      this._tripDuration = `${dayjs(points[0].dates.start).format(`MMM DD`)}&nbsp;—&nbsp;${dayjs(points[points.length - 1].dates.end).format(`DD`)}`;
-      this._tripDestination = `${points[0].destination} &mdash; ... &mdash; ${points[points.length - 1].destination}`;
-    }
+    this._tripDuration = this._getTripDuration(points);
+    this._tripDestination = this._getTripDestination(points);
+  }
+
+  _getTripDestination(points) {
     if (points.length > 0 && points.length <= 3) {
-      this._tripDuration = `${dayjs(points[0].dates.start).format(`MMM DD`)}&nbsp;—&nbsp;${dayjs(points[points.length - 1].dates.end).format(`DD`)}`;
-      this._tripDestination = points.map((point) => `${point.destination} &mdash; `);
+      const destinations = new Set(points.map((point) => `${point.destination}`));
+      return [...destinations].join(` &mdash; `);
     }
+    return `${points[0].destination} &mdash; ... &mdash; ${points[points.length - 1].destination}`;
+  }
+
+  _getTripDuration(points) {
+    return `${dayjs(points[0].dates.start).format(`DD MMM`)}&nbsp;—&nbsp;${dayjs(points[points.length - 1].dates.end).format(`DD MMM`)}`;
   }
 
   getTemplate() {
