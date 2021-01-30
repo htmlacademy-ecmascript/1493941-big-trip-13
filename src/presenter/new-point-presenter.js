@@ -85,6 +85,7 @@ export default class NewPointPresenter {
 
   _handleSubmit(point) {
     this._changeData(UserAction.ADD_POINT, UpdateType.MAJOR, point);
+    document.querySelector(`[data-name=${MenuItem.ADD_NEW_POINT}]`).disabled = false;
   }
 
   _handleDeleteClick() {

@@ -96,7 +96,7 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, dest
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-${data.id}" type="number" name="event-price" ${isDisabled ? `disabled` : ``} value="${data.price}">
+                    <input class="event__input  event__input--price" id="event-price-${data.id}" type="text" name="event-price" ${isDisabled ? `disabled` : ``} value="${data.price}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? `disabled` : ``}>${data.isSaving ? `Saving...` : `Save`}</button>
@@ -185,7 +185,6 @@ export default class EditFormView extends SmartView {
         {
           dateFormat: `d/m/Y H:i`,
           enableTime: true,
-          time_24hr: true,
           defaultDate: this._data.dates.start,
           onClose: this._startDateChangeHandler
         }
@@ -196,7 +195,6 @@ export default class EditFormView extends SmartView {
         {
           dateFormat: `d/m/Y H:i`,
           enableTime: true,
-          time_24hr: true,
           minDate: this._data.dates.start,
           defaultDate: this._data.dates.end,
           onClose: this._endDateChangeHandler
@@ -247,10 +245,15 @@ export default class EditFormView extends SmartView {
   }
 
   _priceInputHandler(evt) {
-    evt.preventDefault();
-    this.updateData({
-      price: evt.target.value,
-    }, true);
+    const validValue = new RegExp(/^[0-9]+$/);
+    if (evt.target.value.match(validValue)) {
+      evt.preventDefault();
+      this.updateData({
+        price: evt.target.value,
+      }, true);
+    } else {
+      evt.preventDefault();
+    }
   }
 
   _setInnerHandlers() {
