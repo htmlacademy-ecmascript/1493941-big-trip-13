@@ -29,6 +29,7 @@ export default class MenuView extends AbstractView {
     super();
 
     this._menuClickHandler = this._menuClickHandler.bind(this);
+    this._addButtonClickHandler = this._addButtonClickHandler.bind(this);
   }
 
   _menuClickHandler(evt) {
@@ -38,7 +39,17 @@ export default class MenuView extends AbstractView {
 
   setMenuClickHandler(callback) {
     this._callback.menuClick = callback;
-    this.getElement().addEventListener(`click`, this._menuClickHandler);
+    this.getElement().querySelector(`.trip-controls__trip-tabs`).addEventListener(`click`, this._menuClickHandler);
+  }
+
+  _addButtonClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.buttonClick(evt.target.dataset.name);
+  }
+
+  setAddButtonClickHandler(callback) {
+    this._callback.buttonClick = callback;
+    this.getElement().querySelector(`[data-name=${MenuItem.ADD_NEW_POINT}]`).addEventListener(`click`, this._addButtonClickHandler);
   }
 
   setMenuItem(menuItem) {

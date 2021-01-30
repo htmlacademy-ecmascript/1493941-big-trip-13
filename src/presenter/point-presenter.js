@@ -117,7 +117,7 @@ export default class PointPresenter {
   }
 
   _handleDeleteClick(point) {
-    this._changeData(UserAction.DELETE_POINT, UpdateType.MINOR, point);
+    this._changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, point);
   }
 
   setViewState(state) {

@@ -1,5 +1,5 @@
 import PointEditFormView from "../view/edit-form-view.js";
-import {UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType, MenuItem} from "../const.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 
 export default class NewPointPresenter {
@@ -32,6 +32,12 @@ export default class NewPointPresenter {
     this._tripPointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     this._renderForm();
+
+    document.querySelector(`[data-name=${MenuItem.TABLE}]`)
+      .classList.remove(`trip-tabs__btn--active`);
+    document.querySelector(`[data-name=${MenuItem.STATS}]`)
+      .classList.remove(`trip-tabs__btn--active`);
+    document.querySelector(`[data-name=${MenuItem.ADD_NEW_POINT}]`).disabled = true;
   }
 
   _renderForm() {
@@ -52,7 +58,9 @@ export default class NewPointPresenter {
     this._tripPointEditComponent = null;
 
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
-    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    document.querySelector(`[data-name=${MenuItem.TABLE}]`)
+      .classList.add(`trip-tabs__btn--active`);
+    document.querySelector(`[data-name=${MenuItem.ADD_NEW_POINT}]`).disabled = false;
   }
 
   setSaving() {

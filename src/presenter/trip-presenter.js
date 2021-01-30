@@ -29,6 +29,7 @@ export default class TripPresenter {
     this._noPointsComponent = null;
     this._tripInfoComponent = null;
     this._costInfoComponent = null;
+    this._newPointPresenter = null;
 
     this._loadingComponent = new LoadingView();
 
@@ -90,6 +91,9 @@ export default class TripPresenter {
   }
 
   _handleModeChange() {
+    if (this._newPointPresenter !== null) {
+      this._newPointPresenter.destroy();
+    }
     Object
       .values(this._tripPointsPresenter)
       .forEach((presenter) => presenter.resetView());
@@ -174,11 +178,9 @@ export default class TripPresenter {
         this._newPointPresenter.setSaving();
         this._api.addPoint(update)
           .then((response) => {
-            console.log(response);
             this._pointsModel.addPoint(updateType, response);
           })
-          .catch((er) => {
-            console.log(er);
+          .catch(() => {
             this._newPointPresenter.setAborting();
           });
         break;
@@ -216,8 +218,7 @@ export default class TripPresenter {
     }
   }
 
-  _clearTripPointList(resetSortType = false) { /*
-    this._newPointPresenter.destroy();*/
+  _clearTripPointList(resetSortType = false) {
     Object
       .values(this._tripPointsPresenter)
       .forEach((presenter) => presenter.destroy());
@@ -227,10 +228,10 @@ export default class TripPresenter {
     remove(this._loadingComponent);
     remove(this._tripListComponent);
     remove(this._noPointsComponent);
-    remove(this._tripInfoComponent);
-    remove(this._costInfoComponent);
 
     if (resetSortType) {
+      remove(this._costInfoComponent);
+      remove(this._tripInfoComponent);
       this._currentSortType = SortType.DAY;
     }
   }

@@ -27,7 +27,7 @@ export default class TripInfoView extends AbstractView {
   }
 
   _getTripDuration(points) {
-    return `${dayjs(points[0].dates.start).format(`MMM DD`)}&nbsp;—&nbsp;${dayjs(points[points.length - 1].dates.end).format(`DD`)}`;
+    return `${dayjs(points[0].dates.start).format(`DD MMM`)}&nbsp;—&nbsp;${dayjs(points[points.length - 1].dates.end).format(`DD MMM`)}`;
   }
 
   getTemplate() {

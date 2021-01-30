@@ -75,10 +75,10 @@ const createEditPointElement = (data, isSubmitDisabled, offers, pointTypes, dest
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
-                    <label class="event__label  event__type-output" for="event-destination-${data.id}">${data.type}
+                    <label class="event__label  event__type-output" for="event-destination-1}">${data.type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-${data.id}" type="text" ${isDisabled ? `disabled` : ``} name="event-destination" value="${data.destination}" list="destination-list-1">
-                    <datalist id="destination-list-${data.id}">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" ${isDisabled ? `disabled` : ``} name="event-destination" value="${data.destination}" list="destination-list-1">
+                    <datalist id="destination-list-1">
                     ${destinations.map((item) => `<option value="${item.name}"></option>`).join(``)}
                     </datalist>
                   </div>

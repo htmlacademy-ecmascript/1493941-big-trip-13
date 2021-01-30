@@ -1,7 +1,7 @@
 export const SortType = {
-  DAY: `day`,
-  DURATION: `duration`,
-  PRICE: `price`
+  DAY: `sort-day`,
+  DURATION: `sort-time`,
+  PRICE: `sort-price`
 };
 
 export const UserAction = {

@@ -54,7 +54,8 @@ export default class Api {
       body: JSON.stringify(PointsModel.adaptToServer(point)),
       headers: new Headers({"Content-Type": `application/json`})
     })
-      .then(Api.toJSON);
+      .then(Api.toJSON)
+      .then((data) => PointsModel.adaptToClient(data));
   }
 
   deletePoint(point) {
@@ -62,16 +63,6 @@ export default class Api {
       url: `points/${point.id}`,
       method: Method.DELETE
     });
-  }
-
-  sync(data) {
-    return this._load({
-      url: `points/sync`,
-      method: Method.POST,
-      body: JSON.stringify(data),
-      headers: new Headers({"Content-Type": `application/json`})
-    })
-      .then(Api.toJSON);
   }
 
   _load({

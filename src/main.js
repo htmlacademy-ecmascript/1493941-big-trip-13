@@ -33,31 +33,27 @@ const filterPresenter = new FilterPresenter(tripFilterContainer, filterModel, po
 
 const handlePointNewFormClose = () => {
   menuComponent.getElement().querySelector(`[data-name=${MenuItem.TABLE}]`)
-    .classList.add(`trip-tabs__btn--active`);
+    .disable = false;
   menuComponent.setMenuItem(MenuItem.TABLE);
 };
 
-let statsComponent = null;
+let statisticComponent = null;
+
+const handleAddButtonClick = () => {
+  tripPresenter.destroy();
+  filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+  tripPresenter.init();
+  remove(statisticComponent);
+  tripPresenter.createPoint(handlePointNewFormClose);
+};
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
-    case MenuItem.ADD_NEW_POINT:
-      tripPresenter.destroy();
-      filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-      tripPresenter.init();
-      remove(statsComponent);
-      tripPresenter.createPoint(handlePointNewFormClose);
-      menuComponent.getElement().querySelector(`[data-name=${MenuItem.TABLE}]`)
-        .classList.remove(`trip-tabs__btn--active`);
-      menuComponent.getElement().querySelector(`[data-name=${MenuItem.STATS}]`)
-        .classList.remove(`trip-tabs__btn--active`);
-      menuComponent.getElement().querySelector(`[data-name=${MenuItem.ADD_NEW_POINT}]`).disabled = true;
-      break;
     case MenuItem.TABLE:
       tripPresenter.destroy();
       filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
       tripPresenter.init();
-      remove(statsComponent);
+      remove(statisticComponent);
       menuComponent.getElement().querySelector(`[data-name=${MenuItem.TABLE}]`)
         .classList.add(`trip-tabs__btn--active`);
       menuComponent.getElement().querySelector(`[data-name=${MenuItem.STATS}]`)
@@ -66,7 +62,7 @@ const handleSiteMenuClick = (menuItem) => {
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
-      filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+      filterModel.setFilter(UpdateType.MAJOR, FilterType.DISABLED);
       if (pointsModel.getPoints().length !== 0) {
         tripPresenter.renderTripInfo();
       }
@@ -74,8 +70,8 @@ const handleSiteMenuClick = (menuItem) => {
         .classList.remove(`trip-tabs__btn--active`);
       menuComponent.getElement().querySelector(`[data-name=${MenuItem.STATS}]`)
         .classList.add(`trip-tabs__btn--active`);
-      statsComponent = new StatsView(pointsModel.getPoints());
-      render(tripPointsContainer, statsComponent, RenderPosition.AFTEREND);
+      statisticComponent = new StatsView(pointsModel.getPoints());
+      render(tripPointsContainer, statisticComponent, RenderPosition.AFTEREND);
       break;
   }
 };
@@ -90,11 +86,10 @@ Promise.all([
     destinationsModel.setDestinations(destinations);
     pointsModel.setPoints(UpdateType.INIT, points);
     menuComponent.setMenuClickHandler(handleSiteMenuClick);
+    menuComponent.setAddButtonClickHandler(handleAddButtonClick);
   })
-  .catch((er) => {
-    console.log(er);
+  .catch(() => {
     pointsModel.setPoints(UpdateType.INIT, []);
-    menuComponent.setMenuClickHandler(handleSiteMenuClick);
   });
 
 tripPresenter.init();
