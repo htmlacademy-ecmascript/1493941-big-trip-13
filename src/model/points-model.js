@@ -82,18 +82,18 @@ export default class PointsModel extends Observer {
     return Object.assign(
         {},
         {
-          base_price: Number(point.price),
-          date_from: new Date(point.dates.start).toISOString(),
-          date_to: new Date(point.dates.end).toISOString(),
-          destination: {
+          "base_price": Number(point.price),
+          "date_from": new Date(point.dates.start).toISOString(),
+          "date_to": new Date(point.dates.end).toISOString(),
+          "destination": {
             name: point.destination,
             description: point.description,
             pictures: point.photo ? point.photo : []
           },
-          id: point.id,
-          is_favorite: point.isFavorite,
-          offers: point.offers,
-          type: point.type,
+          "id": point.id,
+          "is_favorite": point.isFavorite,
+          "offers": point.offers,
+          "type": point.type,
         }
     );
   }

@@ -37,6 +37,7 @@ const getDateInDays = (dateDiff) => {
   const days = timeDuration.days();
   return `${(days > 0) ? addLeadingZero(days) + `D ` : `00D`}`;
 };
+
 export {
   getDatesDuration,
   sortByDate,
