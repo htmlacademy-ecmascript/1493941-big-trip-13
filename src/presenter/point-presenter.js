@@ -91,7 +91,7 @@ export default class PointPresenter {
   }
 
   _handleFavoriteClick() {
-    this._changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, Object.assign({}, this._tripPoint, {isFavorite: !this._tripPoint.isFavorite}));
+    this._changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, Object.assign({}, this._tripPoint, {isFavorite: !this._tripPoint.isFavorite}));
   }
 
   _escKeyDownHandler(evt) {
